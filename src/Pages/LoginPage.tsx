@@ -21,7 +21,7 @@ export default  function LoginPage() {
 
             }
             dispatch(login(UserData));
-            navigate("/app");
+            navigate("dashboard");
         }
     }
     const handleSignUpNavigation = () => {
