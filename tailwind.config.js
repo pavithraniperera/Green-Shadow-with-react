@@ -5,7 +5,11 @@ export default {
     extend: {
       colors: {
         LogoSectionGreen: "rgb(175,202,175)",
-        LoginBackgroundColor:"#ece4d8"
+        LoginBackgroundColor:"#ece4d8",
+        DashboardBackgroundColor:"#faf1d7",
+      },
+      fontFamily: {
+        itim: ['Itim', 'cursive'], // 'cursive' is a fallback
       },
     },// Customize the theme here if needed
   },
