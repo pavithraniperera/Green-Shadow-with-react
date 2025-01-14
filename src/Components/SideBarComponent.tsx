@@ -3,7 +3,7 @@ import '../assets/CustomCss/CustomCss.css'
 
 export  default function sideBarComponent({ isOpen }){
     return (
-        <aside className={`bg-gradient-to-b from-green-800 to-green-950 text-white min-h-screen w-64 fixed top-0 left-0 border-r border-gray-200 drop-shadow-md transform transition-transform duration-300 ${
+        <aside className={`bg-gradient-to-b from-green-800 to-green-950 text-white min-h-screen w-64 fixed top-0 left-0 border-r border-gray-200 drop-shadow-md transform transition-transform duration-300 z-50 ${
             isOpen ? "translate-x-0 top-20" : "-translate-x-64"
         } md:translate-x-0`}>
             <div className="p-4">
