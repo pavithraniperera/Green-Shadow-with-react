@@ -1,6 +1,6 @@
 export class Field{
     fieldId: string;
-    Fieldname: string;
+    fieldname: string;
     fieldsize: number;
     location: string;
     image1: string;
@@ -8,7 +8,7 @@ export class Field{
 
     constructor(fieldId: string, fieldname: string,fieldsize: number, location: string, image1: string, image2: string) {
         this.fieldId = fieldId;
-        this.Fieldname =fieldname;
+        this.fieldname =fieldname;
         this.fieldsize=fieldsize;
         this.location=location;
         this.image1=image1;
