@@ -1,15 +1,15 @@
 import '../../assets/CustomCss/CustomCss.css';
 import MapComponent from "./MapComponent.tsx";
-import {useDispatch} from "react-redux";
-import {useState} from "react";
-import {Field} from "../../models/Field.tsx";
+import {useDispatch, useSelector} from "react-redux";
+import {useMemo, useState} from "react";
+import {Field} from "../../models/Field.ts";
 import {addField} from "../../Features/FieldSlice.ts";
 
 const addFieldModal = ({isOpen,onClose}) => {
     const dispatch = useDispatch();
     const [formData, setFormData] = useState<Field>({
         fieldId: '',
-        Fieldname: '',
+        fieldname: '',
         fieldsize: 0,
         location: '',
         images: ["",""], // Array to hold image data in base64 format
@@ -17,19 +17,18 @@ const addFieldModal = ({isOpen,onClose}) => {
         }
 
     );
+    const fields = useSelector((state: any) => state.field.fields);
+
 
     const handleAddField = () => {
         console.log('Form Data:', formData);
-        const payload = {
-            fieldId: formData.fieldId,
-            fieldname: formData.Fieldname,
-            location: formData.location,
-            fieldSize: formData.fieldsize,
-            image1: formData.images[0], // Base64-encoded strings
-            image2:formData.images[1]
-        };
+        const payload = new Field(formData.fieldId, formData.fieldname,formData.fieldsize,formData.location,formData.images[0],formData.images[1])
+
+        console.log(payload);
 
         dispatch(addField(payload));
+        console.log('Updated Fields Array:', fields);
+
 
 
         onClose();
@@ -124,7 +123,7 @@ const addFieldModal = ({isOpen,onClose}) => {
                                     </label>
                                     <input
                                         type="number"
-                                        id="Fieldsize"
+                                        id="fieldsize"
                                         className="field-input-css"
                                         required
                                         onChange={handleInputChange}
