@@ -6,12 +6,14 @@ const initialState={
     fields:[]
 } ;
 const FieldSlice = createSlice({
-    name:"fieldSlice",
+    name:"field",
     initialState:initialState,
     reducers:{
         addField:(state,action)=>{
-            state.fields.push(action.payload);
-            console.log(state.fields);
+            console.log('Action Payload:', action.payload);
+            state.fields.push(action.payload); // Immer handles immutability
+            console.log('Updated Fields ArrayS:', state.fields);
+
 
         }
     }
