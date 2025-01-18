@@ -1,13 +1,13 @@
 import '../../assets/CustomCss/CustomCss.css';
 import MapComponent from "./MapComponent.tsx";
 import {useDispatch, useSelector} from "react-redux";
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {Field} from "../../models/Field.ts";
-import {addField} from "../../Features/FieldSlice.ts";
+import {addField, updateField} from "../../Features/FieldSlice.ts";
 
-const addFieldModal = ({isOpen,onClose}) => {
+const addFieldModal = ({ isOpen, onClose, field = null }) => {
     const dispatch = useDispatch();
-    const [formData, setFormData] = useState<Field>({
+    const [formData, setFormData] = useState({
         fieldId: '',
         fieldname: '',
         fieldsize: 0,
@@ -17,8 +17,41 @@ const addFieldModal = ({isOpen,onClose}) => {
         }
 
     );
-    const fields = useSelector((state: any) => state.field.fields);
+    useEffect(() => {
+        if (field) {
+            const imageArray =[field.image1,field.image2];
+            setFormData({
+                fieldId:field.fieldId,
+                fieldname:field.fieldname,
+                fieldsize:field.fieldsize,
+                location:field.location,
+                images:imageArray,
+            });
+            imageArray.forEach((image, index) => {
+                console.log(image);
+                const previewElement = document.getElementById(`preview${index + 1}`) as HTMLImageElement;
+                if (previewElement && image) {
+                    previewElement.src = image;
+                    previewElement.classList.remove('hidden');
+                }
+            });
 
+        }
+
+    }, [field]);
+
+
+
+    const fields = useSelector((state: any) => state.field.fields);
+    const handleSave = () => {
+        if (field) {
+           updateFields()
+
+        } else {
+            handleAddField(); // Call add handler otherwise
+        }
+        onClose();
+    };
 
     const handleAddField = () => {
         console.log('Form Data:', formData);
@@ -33,6 +66,16 @@ const addFieldModal = ({isOpen,onClose}) => {
 
         onClose();
     };
+    const updateFields = () => {
+        const payload = {
+            fieldId: formData.fieldId,
+            updatedField:new Field(formData.fieldId, formData.fieldname,formData.fieldsize,formData.location,formData.images[0],formData.images[1])
+        }
+        dispatch(updateField(payload));
+        console.log('Updated Fields Array:', fields);
+
+
+    }
     const handleLocationSelect = (location: string) => {
         setFormData((prev) => ({ ...prev, location }));
     };
@@ -69,7 +112,7 @@ const addFieldModal = ({isOpen,onClose}) => {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50  ">
                     <div className="bg-amber-50 backdrop-blur-lg rounded-lg shadow-lg w-full max-w-3xl p-6 relative overflow-y-scroll md:max-h-[800px] max-h-screen">
                         <div className="flex justify-between items-center border-b pb-4">
-                            <h4 className="text-2xl font-bold font-itim text-green-700">Add New Field</h4>
+                            <h4 className="text-2xl font-bold font-itim text-green-700"> {field ? "Update Field" : "Add New Field"}</h4>
                             <button
                                 className="text-gray-500 hover:text-gray-700"
                                 onClick={onClose}
@@ -87,8 +130,10 @@ const addFieldModal = ({isOpen,onClose}) => {
                                         type="text"
                                         id="fieldId"
                                         className="field-input-css"
+                                        value={formData.fieldId}
                                         required
                                         onChange={handleInputChange}
+
                                     />
                                 </div>
                                 <div className="mb-4">
@@ -99,6 +144,7 @@ const addFieldModal = ({isOpen,onClose}) => {
                                         type="text"
                                         id="fieldname"
                                         className="field-input-css"
+                                        value={formData.fieldname}
                                         required
                                         onChange={handleInputChange}
                                     />
@@ -125,6 +171,7 @@ const addFieldModal = ({isOpen,onClose}) => {
                                         type="number"
                                         id="fieldsize"
                                         className="field-input-css"
+                                        value={formData.fieldsize}
                                         required
                                         onChange={handleInputChange}
                                     />
@@ -163,9 +210,9 @@ const addFieldModal = ({isOpen,onClose}) => {
                             </button>
                             <button
                                 className="bg-amber-300/50 hover:bg-amber-400/60 text-emerald-700 font-semibold py-2 px-4 rounded-lg shadow-lg backdrop-blur-sm transition-all duration-300 ease-in-out transform hover:scale-105"
-                                onClick={handleAddField}
+                                onClick={handleSave}
                             >
-                                <i className="fas fa-plus mr-2"></i> Add Field
+                                <i className="fas fa-plus mr-2"></i> {field ? "Save Changes" : "Add Field"}
                             </button>
 
                         </div>
