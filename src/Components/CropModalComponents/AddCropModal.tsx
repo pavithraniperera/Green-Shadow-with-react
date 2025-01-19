@@ -89,7 +89,7 @@ export default function AddCropModal({isOpen, onClose,crop=null}) {
     const handleUpdateCrop = () => {
         const payload = {
             Id: formData.cropId,
-            updatedField:new Crop(formData.cropId, formData.fieldId,formData.commonName,formData.specificName,formData.category,formData.season,formData.image)
+            updatedCrop:new Crop(formData.cropId, formData.fieldId,formData.commonName,formData.specificName,formData.category,formData.season,formData.image)
         }
         dispatch(UpdateCrop(payload));
         console.log('Updated Fields Array:', fields);
@@ -135,9 +135,9 @@ export default function AddCropModal({isOpen, onClose,crop=null}) {
                                     </label>
                                     <input
                                         type="text"
-                                        id="specialName"
+                                        id="specificName"
                                         className="field-input-css"
-                                        value={formData.specialName}
+                                        value={formData.specificName}
                                         onChange={handleInputChange}
                                         required
                                     />
