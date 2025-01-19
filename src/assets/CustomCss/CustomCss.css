@@ -42,3 +42,9 @@
 .view-mor-btn{
   @apply  bg-orange-300/50 text-green-800 py-2 px-4 rounded-lg hover:bg-green-300 hover:text-green-900 transition-all
 }
+.table-row{
+  @apply transition transform duration-300 relative z-10 hover:scale-[1.02] hover:shadow-lg hover:bg-white/80 cursor-pointer
+}
+.table-data{
+  @apply p-3 text-green-600 border-b border-white/20
+}
