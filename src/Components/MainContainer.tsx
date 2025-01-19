@@ -15,20 +15,24 @@ export default function MainContainer(props:MainContainerProps) {
                     props.dataArray.map((item, index) => props.renderItem(item, index))
                 ) : (
                     // Render table
-                    <table className="w-full border-collapse">
-                        <thead>
-                        <tr>
-                            {props.tableHeaders?.map((header, index) => (
-                                <th key={index} className="border px-4 py-2">
-                                    {header}
-                                </th>
-                            ))}
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {props.dataArray.map((item, index) => props.renderItem(item, index))}
-                        </tbody>
-                    </table>
+                    <div className="overflow-x-auto p-4">
+                        <table className="w-full border-collapse mx-auto bg-white/20 backdrop-blur-md rounded-lg overflow-hidden shadow-md">
+                            <thead >
+                            <tr>
+                                {props.tableHeaders?.map((header, index) => (
+                                    <th key={index} className="p-3 text-left bg-white/40 text-green-800 font-bold">
+                                        {header}
+                                    </th>
+                                ))}
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {props.dataArray.map((item, index) => props.renderItem(item, index))}
+                            </tbody>
+                        </table>
+
+                    </div>
+
                 )}
 
 

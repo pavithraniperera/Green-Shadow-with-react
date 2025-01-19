@@ -1,7 +1,8 @@
-enum Role {
-    ADMINISTRATOR,
-    SCIENTIST,
-    OTHER
+export enum Role {
+    MANAGER = "MANAGER",
+    ADMINISTRATOR = "ADMINISTRATOR",
+    SCIENTIST = "SCIENTIST",
+    OTHER = "OTHER",
 
 }
 

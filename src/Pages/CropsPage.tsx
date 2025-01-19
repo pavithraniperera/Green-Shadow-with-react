@@ -9,6 +9,7 @@ import {useState} from "react";
 import AddCropModal from "../Components/CropModalComponents/AddCropModal.tsx";
 
 import {deleteCrop} from "../Features/CropSlice.ts";
+import {selectFieldById} from "../Features/FieldSlice.ts";
 
 
 export default function CropsPage() {
@@ -20,6 +21,7 @@ export default function CropsPage() {
         setIsModalOpen(true)
         closeViewModal()
     };
+
     const closeCropModal = () => {
         setSelectedCrop(null)
         setIsModalOpen(false);
@@ -52,6 +54,7 @@ export default function CropsPage() {
         setSelectedCrop(null)
     }
     const renderCropCard = (crop: Crop, index: number) => {
+        const field = useSelector((state) => selectFieldById(state, crop.fieldId));
         return (
 
             <div className="card-custom"
@@ -85,7 +88,7 @@ export default function CropsPage() {
 
                     <div className="field-info mb-2" id="field-info-${crop.id}">
                         <h4>Field</h4>
-                        <p>{crop.fieldId} </p>
+                        <p id={crop.fieldId}>{field.fieldname} </p>
                     </div>
 
 
@@ -212,9 +215,10 @@ export default function CropsPage() {
                                     </label>
                                     <input
                                         type="text"
-                                        id="field"
+                                        id="Field"
                                         className="field-input-css"
                                         value={selectedCrop.fieldId}
+
                                         readOnly
                                     />
                                 </div>

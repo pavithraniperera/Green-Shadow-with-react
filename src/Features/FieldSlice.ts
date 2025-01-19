@@ -29,6 +29,12 @@ const FieldSlice = createSlice({
         }
 
     }
+
 })
+
+// Selector to get field by ID
+export const selectFieldById = (state, fieldId) => {
+    return state.field.fields.find(field => field.fieldId === fieldId);
+};
 export const {addField,updateField,deleteField} = FieldSlice.actions;
 export default FieldSlice.reducer;
