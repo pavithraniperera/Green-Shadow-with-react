@@ -7,18 +7,21 @@ import AddBtnComponent from "../Components/AddBtnComponent.tsx";
 import {useState} from "react";
 
 import AddCropModal from "../Components/CropModalComponents/AddCropModal.tsx";
-import {Field} from "../models/Field.ts";
+
+import {deleteCrop} from "../Features/CropSlice.ts";
 
 
 export default function CropsPage() {
 
     const crops = useSelector((state: any) => state.crop.crops)
+    const dispatch = useDispatch();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const openCropModal = () => {
         setIsModalOpen(true)
         closeViewModal()
     };
     const closeCropModal = () => {
+        setSelectedCrop(null)
         setIsModalOpen(false);
 
     }
@@ -43,7 +46,11 @@ export default function CropsPage() {
 
 
     }
-
+    const handleDelete = (selectedCrop:Crop) => {
+        dispatch(deleteCrop(selectedCrop.cropId));
+        closeViewModal()
+        setSelectedCrop(null)
+    }
     const renderCropCard = (crop: Crop, index: number) => {
         return (
 
@@ -65,7 +72,7 @@ export default function CropsPage() {
 
 
                     <div className="field-info mb-2">
-                        <h4>Special Name</h4>
+                        <h4>Specific Name</h4>
                         <p>{crop.specificName}</p>
                     </div>
 
@@ -250,6 +257,7 @@ export default function CropsPage() {
                                 type="button"
                                 className="modal-btn"
                                 id="CropDeleteBtn"
+                                onClick={()=>{handleDelete(selectedCrop)}}
                             >
                                 <i className="fas fa-trash-alt"></i> Delete
                             </button>
