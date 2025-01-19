@@ -18,7 +18,7 @@ const CropSlice = createSlice({
             console.log('Action Payload:', action.payload);
             const {Id,updatedCrop}=action.payload;
             state.crops = state.crops.map(crop =>
-                updatedCrop.cropId === Id ? { ...crop, ...updatedCrop } : crop
+                crop.cropId === Id ? { ...crop, ...updatedCrop } : crop
             );
         },
         deleteCrop:(state,action)=>{
