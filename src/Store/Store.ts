@@ -17,6 +17,7 @@ const store = configureStore({
         vehicle:vehicleReducer,
         equipment:equipmentReducer,
         log:logReducer
+
     }
 });
 export default store;
