@@ -6,6 +6,7 @@ import cropReducer from "../Features/CropSlice.ts";
 import staffReducer from "../Features/StaffSlice.ts";
 import vehicleReducer from "../Features/VehicleSlice.ts";
 import equipmentReducer from "../Features/EquipmentSlice.ts";
+import logReducer from "../Features/LogSlice.ts";
 
 const store = configureStore({
     reducer: {
@@ -14,7 +15,8 @@ const store = configureStore({
         crop:cropReducer,
         staff:staffReducer,
         vehicle:vehicleReducer,
-        equipment:equipmentReducer
+        equipment:equipmentReducer,
+        log:logReducer
     }
 });
 export default store;

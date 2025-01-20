@@ -145,6 +145,7 @@ export default function FieldPage() {
                     renderItem={renderFieldCard}
                     noDataMessage="No fields to display"
                     displayType="card"
+                    styles=   "justify-center flex-wrap gap-5"
                 />
             </section>
             <div className="flex justify-center items-center pt-10 md:pl-20 mx-auto font-itim ">

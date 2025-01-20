@@ -5,9 +5,11 @@ import MainContainerProps from "../models/MainContainerProps.ts";
 export default function MainContainer(props:MainContainerProps) {
 
     return (
+
+
         <>
             <section
-                className={`flex ${props.displayType==='card'?"justify-center flex-wrap gap-5":"flex-col"} max-w-5xl w-full max-h-[600px] overflow-y-auto p-8 bg-white/10 backdrop-blur-lg shadow-md rounded-lg`}>
+                className={`flex ${props.displayType==='card'?`${props.styles}`:"flex-col"} max-w-5xl w-full max-h-[600px] overflow-y-auto p-8 bg-white/10 backdrop-blur-lg shadow-md rounded-lg`}>
                 {props.dataArray.length === 0 ? (
                     <NoDataComponent message={props.noDataMessage} />
                 ) : props.displayType === "card" ? (
