@@ -133,8 +133,8 @@ export default function LogsAddModal({ isOpen, onClose, log = null }) {
                                         Log Description
                                     </label>
                                     <textarea
-                                        id="logDescription"
-                                        name="logDescription"
+                                        id="description"
+                                        name="description"
                                         className="field-input-css mt-2"
                                         rows="3"
                                         value={formData.description}
@@ -170,7 +170,7 @@ export default function LogsAddModal({ isOpen, onClose, log = null }) {
                                 <div className="mb-4">
                                     <label className="field-label">Assigned Staff</label>
                                     <div
-                                        className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2 border rounded p-2 overflow-y-scroll">
+                                        className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2 border rounded p-2 overflow-y-scroll"> {/* Added grid layout */}
                                         {staff.map(s => (
                                             <div key={s.email} className="flex items-center">
                                                 <input
@@ -183,7 +183,7 @@ export default function LogsAddModal({ isOpen, onClose, log = null }) {
                                                         const updatedStaff = formData.staff.includes(s.email)
                                                             ? formData.staff.filter(email => email !== s.email)
                                                             : [...formData.staff, s.email];
-                                                        setFormData(prev => ({...prev, allocatedStaff: updatedStaff}));
+                                                        setFormData(prev => ({...prev, staff: updatedStaff}));
                                                     }}
                                                     className="mr-2"
                                                 />

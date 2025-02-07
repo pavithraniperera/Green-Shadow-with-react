@@ -1,4 +1,4 @@
-import {useLocation} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 
 export default function TopHeaderComponent({ toggleSidebar }) {
     const location = useLocation();
@@ -18,6 +18,8 @@ export default function TopHeaderComponent({ toggleSidebar }) {
                 return 'Vehicles';
             case '/equipment':
                 return 'Equipment';
+            case '/profile':
+                return 'My Profile';
             default:
                 return 'Dashboard';
         }
@@ -50,13 +52,9 @@ export default function TopHeaderComponent({ toggleSidebar }) {
                     <div className="relative group">
                         <div
                             className="rounded-full bg-gray-300 w-8 h-8 flex items-center justify-center overflow-hidden">
-                            <i className="fas fa-user text-gray-600 text-lg"></i>
+                            <Link to="/profile"> <i className="fas fa-user text-gray-600 text-lg"></i></Link>
                         </div>
-                        <div
-                            className="hidden group-hover:block absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10">
-                            <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
-                            <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
-                        </div>
+
                     </div>
                 </div>
             </header>

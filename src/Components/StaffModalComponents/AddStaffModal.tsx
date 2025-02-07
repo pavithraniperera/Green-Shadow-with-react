@@ -1,5 +1,4 @@
 import {useEffect, useState} from "react";
-import {Role} from "../../models/User.ts";
 import {Staff} from "../../models/Staff.ts";
 import {useDispatch, useSelector} from "react-redux";
 import {addStaff, updateStaff} from "../../Features/StaffSlice.ts";
@@ -36,7 +35,7 @@ export default function AddStaffModal({isOpen, onClose,staff=null}) {
                 contactNumber:staff.contactNumber,
                 address: staff.address,
                 gender: staff.gender,
-                role: staff.role.toString(),
+                role: staff.role,
                 designation: staff.designation,
                 joinDate: formatDate(staff.joinDate),
                 assignedField: staff.assignedField,
@@ -66,7 +65,7 @@ export default function AddStaffModal({isOpen, onClose,staff=null}) {
     const handleAddStaff = () => {
         console.log('Form Data:', formData);
         const payload = new Staff(formData.firstName, formData.lastName,formData.gender,new Date(formData.joinDate),formData.email,formData.contactNumber
-            ,formData.address,formData.designation,Role[formData.role as keyof typeof Role],formData.assignedField);
+            ,formData.address,formData.designation,formData.role,formData.assignedField);
 
         console.log(payload);
 
@@ -80,7 +79,7 @@ export default function AddStaffModal({isOpen, onClose,staff=null}) {
         const payload = {
             email: formData.email,
             updatedMember:new Staff(formData.firstName, formData.lastName,formData.gender,new Date(formData.joinDate),formData.email,formData.contactNumber,
-                formData.address,formData.designation,Role[formData.role as keyof typeof Role],formData.assignedField)
+                formData.address,formData.designation,formData.role,formData.assignedField)
         }
         dispatch(updateStaff(payload));
 
