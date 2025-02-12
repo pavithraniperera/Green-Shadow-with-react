@@ -4,12 +4,14 @@ import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 
 import axios from "axios";
 import {Field} from "../models/Field.ts";
+import Crop from "../models/Crop.ts";
 
 const api =axios.create({
     baseURL: "http://localhost:3000/fields",
 })
 const initialState={
     fields:[],
+    selectedField:null,
     loading:false,
     error:null,
     successMessage :"null"
@@ -39,6 +41,7 @@ export const updateField=createAsyncThunk(
     'field/updateField',
     async (payload:FormData)=>{
         const token = localStorage.getItem("accessToken");
+        console.log("Field payload",payload);
 
         try {
             const response = await api.put(`update/${payload.get('fieldId')}`,payload,
@@ -93,6 +96,23 @@ export const fetchFields = createAsyncThunk(
         }
     }
 )
+export const fetchFieldById = createAsyncThunk(
+    "field/fetchField",
+    async (fieldId: string) => {
+        const token = localStorage.getItem("accessToken");
+        try {
+            const response = await api.get(`/${fieldId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            return response.data as Crop;
+        } catch (err) {
+            console.error("Error fetching field:", err);
+            throw err;
+        }
+    }
+);
 
 const FieldSlice = createSlice({
     name:"field",
@@ -176,14 +196,32 @@ const FieldSlice = createSlice({
             .addCase(deleteField.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+            })
+
+            .addCase(fetchFieldById.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchFieldById.fulfilled, (state, action) => {
+                state.loading = false;
+                state.selectedField = action.payload; // Store fetched field
+                console.log(selectField)
+            })
+            .addCase(fetchFieldById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message;
             });
+
+
     }
 
 })
 
 // Selector to get field by ID
 export const selectFieldById = (state, fieldId) => {
-    return state.field.fields.find(field => field.fieldId === fieldId);
+    const field = state.field.fields.find(field => field.fieldId === fieldId);
+    console.log(field);
+    return field;
 };
 //export const {addField,updateField,deleteField} = FieldSlice.actions;
 export default FieldSlice.reducer;

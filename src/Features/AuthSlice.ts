@@ -1,5 +1,7 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import axios from "axios";
+import {fetchFields} from "./FieldSlice.ts";
+import {fetchCrops} from "./CropSlice.ts";
 
 
 
@@ -88,6 +90,7 @@ const authSlice = createSlice({
           .addCase(registerUser.fulfilled, (state,action) => {
               state.loading = false;
               state.user = action.payload.user;
+
               state.successMessage ="Account created successfully! Redirecting to login..."
 
 

@@ -104,6 +104,7 @@ const addFieldModal = ({ isOpen, onClose, field = null }) => {
             fieldId: formData.fieldId,
             updatedField:new Field(formData.fieldId, formData.name,formData.size,formData.location,formData.images[0],formData.images[1])
         }*/
+        console.log('Field Form Data:', formData);
         const payload = new FormData();
         payload.append("fieldId", formData.fieldId);
         payload.append("name", formData.name);
@@ -129,28 +130,6 @@ const addFieldModal = ({ isOpen, onClose, field = null }) => {
         setFormData((prev) => ({ ...prev, [id]: value }));
     };
 
-/*    const previewImage = (e: React.ChangeEvent<HTMLInputElement>, previewId: string, index: number) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                const result = reader.result as string;
-                // Update the formData with the selected image
-                setFormData((prev) => {
-                    const updatedImages = [...prev.images];
-                    updatedImages[index] = result; // Store Base64 string
-                    return { ...prev, images: updatedImages };
-                });
-                // Update the image preview
-                const previewElement = document.getElementById(previewId) as HTMLImageElement;
-                if (previewElement) {
-                    previewElement.src = result;
-                    previewElement.classList.remove('hidden');
-                }
-            };
-            reader.readAsDataURL(file); // Convert file to Base64
-        }
-    };*/
     const previewImage = (e: React.ChangeEvent<HTMLInputElement>, previewId: string, index: number) => {
         const file = e.target.files?.[0];
         if (file) {

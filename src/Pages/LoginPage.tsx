@@ -7,6 +7,8 @@ import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {login, loginUser} from "../Features/AuthSlice.ts";
 import {toast} from "react-toastify";
+import {fetchFields} from "../Features/FieldSlice.ts";
+import {fetchCrops} from "../Features/CropSlice.ts";
 
 export default  function LoginPage() {
     const [email, setEmail] = useState("");
@@ -30,7 +32,9 @@ export default  function LoginPage() {
     useEffect(() => {
         if (successMessage!='null') {
             toast.success(successMessage);
-            setTimeout(() => navigate("dashboard"), 2000);
+             dispatch(fetchFields())
+             dispatch(fetchCrops())
+            setTimeout(() => navigate("dashboard"), 1000);
         }else {
             toast.error('failed to login');
         }
