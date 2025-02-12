@@ -4,11 +4,16 @@ import '../../assets/CustomCss/CustomCss.css';
 
 
 import Crop from "../../models/Crop.ts";
-import {addCrop, UpdateCrop} from "../../Features/CropSlice.ts";
+import {saveCrop, updateCrop} from "../../Features/CropSlice.ts";
+import {fetchFields} from "../../Features/FieldSlice.ts";
+
 
 export default function AddCropModal({isOpen, onClose,crop=null}) {
     const fields = useSelector((state: any) => state.field.fields)
     const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(fetchFields()); // Fetch fields when modal opens
+    }, [dispatch]);
     const [formData, setFormData] = useState({
         cropId: "",
         specificName: "",
@@ -16,7 +21,7 @@ export default function AddCropModal({isOpen, onClose,crop=null}) {
         category: "",
         fieldId: "",
         season: "",
-        image: ""
+        image1: null
     });
     useEffect(() => {
         if (crop) {
@@ -27,11 +32,11 @@ export default function AddCropModal({isOpen, onClose,crop=null}) {
                 category: crop.category,
                 fieldId: crop.fieldId,
                 season: crop.season,
-                image: crop.image
+                image1: crop.image1
             });
 
             // Set previewSrc to display the current crop image
-            setPreviewSrc(crop.image || "");
+            setPreviewSrc(crop.image1 ? `http://localhost:3000/${crop.image1}` : "");
         } else {
             // Reset form data and previewSrc when adding a new crop
             setFormData({
@@ -41,17 +46,17 @@ export default function AddCropModal({isOpen, onClose,crop=null}) {
                 category: "",
                 fieldId: "",
                 season: "",
-                image: ""
+                image1: null
             });
             setPreviewSrc("");
         }
     }, [crop]);
     const handleInputChange = (e) => {
         const { id, value } = e.target;
-        setFormData({ ...formData, [id]: value });
+        setFormData((prev) => ({ ...prev, [id]: value }));
     };
     const [previewSrc, setPreviewSrc] = useState("");
-    const handleImageChange = (e) => {
+/*    const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
@@ -60,6 +65,13 @@ export default function AddCropModal({isOpen, onClose,crop=null}) {
                 setFormData({ ...formData, image: reader.result });
             };
             reader.readAsDataURL(file);
+        }
+    };*/
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setPreviewSrc(URL.createObjectURL(file)); // Show preview of the image
+            setFormData({ ...formData, image1: file }); // Store file object
         }
     };
     const handleSave = () => {
@@ -75,24 +87,43 @@ export default function AddCropModal({isOpen, onClose,crop=null}) {
 
     const handleAddCrop = () => {
         console.log('Form Data:', formData);
-        const payload = new Crop(formData.cropId, formData.fieldId,formData.commonName,formData.specificName,formData.category,formData.season,formData.image);
+        console.log(fields);
+       // const payload = new Crop(formData.cropId, formData.fieldId,formData.commonName,formData.specificName,formData.category,formData.season,formData.image);
+        const formDataToSend = new FormData();
 
-        console.log(payload);
+        formDataToSend.append("specificName", formData.specificName);
+        formDataToSend.append("commonName", formData.commonName);
+        formDataToSend.append("category", formData.category);
+        formDataToSend.append("fieldId", formData.fieldId);
+        formDataToSend.append("season", formData.season);
+        if (formData.image1) {
+            formDataToSend.append("image", formData.image1);
+        }
+        console.log(formDataToSend);
 
-        dispatch(addCrop(payload));
-        console.log('Updated crop Array:', fields);
+        dispatch(saveCrop(formDataToSend));
+        console.log('Updated crop Array:', crop);
 
 
 
         onClose();
     };
     const handleUpdateCrop = () => {
-        const payload = {
-            Id: formData.cropId,
-            updatedCrop:new Crop(formData.cropId, formData.fieldId,formData.commonName,formData.specificName,formData.category,formData.season,formData.image)
+        console.log('Form Data:', formData);
+
+        const payload = new FormData();
+        payload.append("cropId", formData.cropId);
+        payload.append("specificName", formData.specificName);
+        payload.append("commonName", formData.commonName);
+        payload.append("category", formData.category);
+        payload.append("fieldId", formData.fieldId);
+        payload.append("season", formData.season);
+        if (formData.image1) {
+            payload.append("image", formData.image1);
         }
-        dispatch(UpdateCrop(payload));
-        console.log('Updated Fields Array:', fields);
+
+        dispatch(updateCrop(payload));
+       // console.log('Updated crops Array:', crop);
 
 
     }
@@ -189,7 +220,7 @@ export default function AddCropModal({isOpen, onClose,crop=null}) {
                                             <option value="">Select Field</option>
                                             {fields.map((field) => (
                                                 <option key={field.fieldId} value={field.fieldId}>
-                                                    {field.fieldname}
+                                                    {field.name}
                                                 </option>
                                             ))}
                                         </select>

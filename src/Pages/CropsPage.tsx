@@ -4,12 +4,12 @@ import MainContainer from "../Components/MainContainer.tsx";
 import Crop from "../models/Crop.ts";
 import {useDispatch, useSelector} from "react-redux";
 import AddBtnComponent from "../Components/AddBtnComponent.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 import AddCropModal from "../Components/CropModalComponents/AddCropModal.tsx";
 
-import {deleteCrop} from "../Features/CropSlice.ts";
-import {selectFieldById} from "../Features/FieldSlice.ts";
+import {deleteCrop, fetchCrops} from "../Features/CropSlice.ts";
+import {fetchFieldById, fetchFields, selectFieldById} from "../Features/FieldSlice.ts";
 
 
 export default function CropsPage() {
@@ -21,6 +21,12 @@ export default function CropsPage() {
         setIsModalOpen(true)
         closeViewModal()
     };
+    useEffect(() => {
+
+        dispatch(fetchCrops());
+        dispatch(fetchFields())
+    }, [dispatch]);
+
 
     const closeCropModal = () => {
         setSelectedCrop(null)
@@ -53,8 +59,20 @@ export default function CropsPage() {
         closeViewModal()
         setSelectedCrop(null)
     }
+    const getImageSrc = (image: string | File | null) => {
+        if (!image) return "/fallback-image.jpg"; // Default fallback image
+
+        if (typeof image === "string") {
+            return `http://localhost:3000/${image}`; // Correctly prepend backend URL
+        }
+
+        return URL.createObjectURL(image); // If it's a file (uploaded from frontend), create a blob URL
+    };
     const renderCropCard = (crop: Crop, index: number) => {
+
+
         const field = useSelector((state) => selectFieldById(state, crop.fieldId));
+        console.log(field);
         return (
 
             <div className="card-custom"
@@ -62,7 +80,7 @@ export default function CropsPage() {
             >
 
                 <div className="image-container">
-                    <img  className={` inset-0 w-[250px] h-[175px] object-cover  transition-opacity duration-500 mx-auto mt-2 `} src={crop.image} alt="Crop Image"/>
+                    <img  className={` inset-0 w-[250px] h-[175px] object-cover  transition-opacity duration-500 mx-auto mt-2 `} src={getImageSrc(crop.image1)} alt="Crop Image"/>
                 </div>
 
 
@@ -88,7 +106,7 @@ export default function CropsPage() {
 
                     <div className="field-info mb-2" id="field-info-${crop.id}">
                         <h4>Field</h4>
-                        <p id={crop.fieldId}>{field.fieldname} </p>
+                        <p id={crop.fieldId}>{field.name} </p>
                     </div>
 
 
@@ -132,7 +150,7 @@ export default function CropsPage() {
                         {/* Modal Header with Image */}
                         <div className="p-6 border-b border-gray-300">
                             <img
-                                src={selectedCrop.image}
+                                src={getImageSrc(selectedCrop.image1)}
                                 alt="Crop Image"
                                 className="mt-6 w-4/5 h-[300px] mx-auto border-b border-gray-300 rounded-xl"
                             />
