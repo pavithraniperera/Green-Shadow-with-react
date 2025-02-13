@@ -18,13 +18,14 @@ export default function AddStaffModal({isOpen, onClose,staff=null}) {
         firstName: "",
         lastName: "",
         email: "",
-        contactNumber: "",
+        contact: "",
         address: "",
         gender: "",
         role: "",
+        dob:"",
         designation: "",
         joinDate: "",
-        assignedField: ""
+        fieldIds: []
     });
     useEffect(() => {
         if (staff) {
@@ -32,22 +33,23 @@ export default function AddStaffModal({isOpen, onClose,staff=null}) {
                 firstName: staff.firstName,
                 lastName: staff.lastName,
                 email: staff.email,
-                contactNumber:staff.contactNumber,
+                contact:staff.contact,
                 address: staff.address,
                 gender: staff.gender,
                 role: staff.role,
+                dob: formatDate(staff.dob),
                 designation: staff.designation,
                 joinDate: formatDate(staff.joinDate),
-                assignedField: staff.assignedField,
+                fieldIds: staff?.fieldIds,
             });
         }
     }, [staff]);
 
     const handleInputChange = (e) => {
-        const { id, value } = e.target;
+        const { name, value } = e.target;
         setFormData((prevData) => ({
             ...prevData,
-            [id]: value, // Dynamically update the field based on its ID
+            [name]: value, // Dynamically update the field based on its ID
         }));
     };
     const handleSave = () => {
@@ -64,8 +66,8 @@ export default function AddStaffModal({isOpen, onClose,staff=null}) {
 
     const handleAddStaff = () => {
         console.log('Form Data:', formData);
-        const payload = new Staff(formData.firstName, formData.lastName,formData.gender,new Date(formData.joinDate),formData.email,formData.contactNumber
-            ,formData.address,formData.designation,formData.role,formData.assignedField);
+        const payload = new Staff(formData.firstName, formData.lastName,formData.gender,new Date(formData.joinDate),formData.email,formData.contact
+            ,formData.address,formData.designation,formData.role,new Date(formData.dob),formData.fieldIds);
 
         console.log(payload);
 
@@ -77,9 +79,9 @@ export default function AddStaffModal({isOpen, onClose,staff=null}) {
     };
     const handleUpdateStaff = () => {
         const payload = {
-            email: formData.email,
-            updatedMember:new Staff(formData.firstName, formData.lastName,formData.gender,new Date(formData.joinDate),formData.email,formData.contactNumber,
-                formData.address,formData.designation,formData.role,formData.assignedField)
+            staffId: staff.staffId,
+            updatedMember:new Staff(formData.firstName, formData.lastName,formData.gender,new Date(formData.joinDate),formData.email,formData.contact,
+                formData.address,formData.designation,formData.role,new Date(formData.dob),formData.fieldIds)
         }
         dispatch(updateStaff(payload));
 
@@ -103,35 +105,40 @@ export default function AddStaffModal({isOpen, onClose,staff=null}) {
                                 {/* First Name */}
                                 <div className="mb-4">
                                     <label htmlFor="firstName" className="field-label">First Name</label>
-                                    <input type="text" id="firstName" className="field-input-css"
+                                    <input name="firstName" type="text" id="firstName" className="field-input-css"
                                            value={formData.firstName} onChange={handleInputChange} required/>
                                 </div>
 
                                 {/* Last Name */}
                                 <div className="mb-4">
                                     <label htmlFor="lastName" className="field-label">Last Name</label>
-                                    <input type="text" id="lastName" className="field-input-css" value={formData.lastName}
+                                    <input type="text" name="lastName" id="lastName" className="field-input-css"
+                                           value={formData.lastName}
                                            onChange={handleInputChange} required/>
                                 </div>
 
                                 {/* Email */}
                                 <div className="mb-4">
                                     <label htmlFor="email" className="field-label">Email</label>
-                                    <input type="email" id="email" className="field-input-css" value={formData.email}
+                                    <input type="email" name="email" id="email" className="field-input-css"
+                                           value={formData.email}
                                            onChange={handleInputChange} required/>
                                 </div>
 
                                 {/* Address */}
                                 <div className="mb-4">
                                     <label htmlFor="address" className="field-label">Address</label>
-                                    <input type="text" id="address" className="field-input-css" value={formData.address}
+                                    <input type="text" name="address" id="address" className="field-input-css"
+                                           value={formData.address}
                                            onChange={handleInputChange} required/>
                                 </div>
 
                                 {/* Contact */}
                                 <div className="mb-4">
-                                    <label htmlFor="contactNumber" className="field-label">Contact</label>
-                                    <input type="text" id="contactNumber" className="field-input-css" value={formData.contactNumber}
+                                    <label htmlFor="contact" className="field-label">Contact</label>
+                                    <input type="text" id="contact" name="contact"
+                                           className="field-input-css"
+                                           value={formData.contact}
                                            onChange={handleInputChange} required/>
                                 </div>
 
@@ -139,18 +146,25 @@ export default function AddStaffModal({isOpen, onClose,staff=null}) {
                                 {/* Gender */}
                                 <div className="mb-4">
                                     <label htmlFor="gender" className="field-label">Gender</label>
-                                    <select id="gender" className="field-input-css" value={formData.gender}
+                                    <select id="gender" name="gender" className="field-input-css"
+                                            value={formData.gender}
                                             onChange={handleInputChange} required>
                                         <option value="">Select Gender</option>
                                         <option value="Male">Male</option>
                                         <option value="Female">Female</option>
                                     </select>
                                 </div>
+                                <div className="mb-4">
+                                    <label htmlFor="dob" className="field-label">Date of Birth</label>
+                                    <input type="date" id="dob" name="dob" className="field-input-css"
+                                           value={formData.dob}
+                                           onChange={handleInputChange} required/>
+                                </div>
 
                                 {/* Role */}
                                 <div className="mb-4">
                                     <label htmlFor="role" className="field-label">Role</label>
-                                    <select id="role" className="field-input-css" value={formData.role}
+                                    <select id="role" name="role" className="field-input-css" value={formData.role}
                                             onChange={handleInputChange} required>
                                         <option value="">Select Role</option>
                                         <option value="MANAGER">Manager</option>
@@ -163,34 +177,51 @@ export default function AddStaffModal({isOpen, onClose,staff=null}) {
                                 {/* Designation */}
                                 <div className="mb-4">
                                     <label htmlFor="designation" className="field-label">Designation</label>
-                                    <input type="text" id="designation" className="field-input-css"
+                                    <input type="text" id="designation" name="designation" className="field-input-css"
                                            value={formData.designation} onChange={handleInputChange} required/>
                                 </div>
 
                                 {/* Date of Joined */}
                                 <div className="mb-4">
                                     <label htmlFor="joinDate" className="field-label">Date of Joined</label>
-                                    <input type="date" id="joinDate" className="field-input-css" value={formData.joinDate}
+                                    <input type="date" id="joinDate" name="joinDate" className="field-input-css"
+                                           value={formData.joinDate}
                                            onChange={handleInputChange} required/>
                                 </div>
 
-                                {/* Assigned Fields */}
-                                <div className="mb-4">
-                                    <label htmlFor="assignedField" className="field-label">Assigned Fields</label>
-                                    <select id="assignedField" className="field-input-css" value={formData.assignedField}
-                                            onChange={handleInputChange} required>
-                                        <option value="">Select Field</option>
-                                        {fields.map((field) => (
-                                            <option key={field.fieldId} value={field.fieldId}>{field.fieldname}</option>
-                                        ))}
-                                    </select>
+
+                                <div
+                                    className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2 border rounded p-2 overflow-y-scroll"> {/* Added grid layout */}
+                                    {fields.map(f => (
+                                        <div key={f.fieldId} className="flex items-center">
+                                            <input
+                                                name="fieldIds"
+                                                type="checkbox"
+                                                id={`field-${f.fieldId}`}
+                                                value={f.fieldId}
+
+                                                checked={formData.fieldIds.includes(f.fieldId)}
+                                                onChange={(e) => {
+                                                    const updateField = formData.fieldIds.includes(f.fieldId)
+                                                        ? formData.fieldIds.filter(id => id !== f.fieldId)
+                                                        : [...formData.fieldIds, f.fieldId];
+                                                    setFormData(prev => ({...prev, fieldIds: updateField}));
+                                                }}
+                                                className="mr-2"
+                                            />
+                                            <label htmlFor={`field-${f.fieldId}`} className="text-[16px]">
+                                                {f.name}
+                                            </label>
+                                        </div>
+                                    ))}
                                 </div>
                             </form>
                         </div>
 
                         <div className="flex justify-end space-x-3 mt-6">
                             <button className="modal-btn" onClick={onClose}>Cancel</button>
-                            <button className="modal-btn" onClick={handleSave}>{staff ? "Save Changes" : "Add Staff"}</button>
+                            <button className="modal-btn"
+                                    onClick={handleSave}>{staff ? "Save Changes" : "Add Staff"}</button>
                         </div>
                     </div>
                 </div>
@@ -199,8 +230,6 @@ export default function AddStaffModal({isOpen, onClose,staff=null}) {
         </>
 
 
-
-
-)
+    )
 
 }
