@@ -14,6 +14,7 @@ import VehiclePage from "./Pages/VehiclePage.tsx";
 import EquipmentPage from "./Pages/EquipmentPage.tsx";
 import ProfilePage from "./Pages/Profile.tsx";
 import {ToastContainer} from "react-toastify";
+import LogoutPage from "./Pages/LogoutPage.tsx";
 
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
                   { path: "vehicles", element: <VehiclePage /> },
                   { path: "equipment", element: <EquipmentPage /> },
                   { path: "profile", element: <ProfilePage /> },
+                  { path: "logout", element: <LogoutPage /> },
 
               ],
           }

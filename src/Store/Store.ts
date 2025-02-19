@@ -16,7 +16,11 @@ export const store = configureStore({
         vehicle: vehicleReducer,
         equipment: equipmentReducer,
         log: logReducer
-    }
+    },
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: false, // Disable serializability check for FormData
+        }),
 });
 
 export type AppDispatch = typeof store.dispatch;
