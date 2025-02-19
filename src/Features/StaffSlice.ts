@@ -1,6 +1,7 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {Staff} from "../models/Staff.ts";
 import axios from "axios";
+import {notifyError, notifySuccess} from "../utils/ToastNotification.ts";
 
 const api = axios.create({
     baseURL: "http://localhost:3000/staff",
@@ -40,8 +41,10 @@ export const addStaff = createAsyncThunk(
                     "Content-Type": "application/json",
                 },
             });
+            notifySuccess("Successfully added staff");
             return response.data;
         } catch (err) {
+            notifyError("Error adding staff");
             console.error("Error adding staff:", err);
             throw err;
         }
@@ -60,15 +63,17 @@ export const updateStaff = createAsyncThunk(
                     "Content-Type": "application/json",
                 },
             });
+            notifySuccess("Successfully updated staff");
             return response.data;
         } catch (err) {
+            notifyError("Error updating staff");
             console.error("Error updating staff:", err);
             throw err;
         }
     }
 );
 
-// **3️⃣ Delete Staff Member**
+//  Delete Staff Member
 export const deleteStaff = createAsyncThunk(
     "staff/deleteStaff",
     async (staffId: string) => {
@@ -79,8 +84,10 @@ export const deleteStaff = createAsyncThunk(
                     Authorization: `Bearer ${token}`,
                 },
             });
+            notifySuccess("Successfully deleted Staff")
             return staffId;
         } catch (err) {
+            notifyError("Error deleting staff")
             console.error("Error deleting staff:", err);
             throw err;
         }

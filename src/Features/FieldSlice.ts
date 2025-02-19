@@ -5,6 +5,7 @@ import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import axios from "axios";
 import {Field} from "../models/Field.ts";
 import Crop from "../models/Crop.ts";
+import {notifyError, notifySuccess} from "../utils/ToastNotification.ts";
 
 const api =axios.create({
     baseURL: "http://localhost:3000/fields",
@@ -31,8 +32,10 @@ export const saveField=createAsyncThunk(
                         "Content-Type": "multipart/form-data",
                     }
                 });
+            notifySuccess("Add Field Successfully");
             return response.data;
         }catch(err){
+            notifyError("Error Occurred While saving field");
             console.log(err);
         }
     }
@@ -52,8 +55,10 @@ export const updateField=createAsyncThunk(
                     }
 
                 });
+            notifySuccess("Update Field Successfully");
             return response.data;
         }catch(err){
+            notifyError("Error Occurred While saving field");
             console.log(err);
         }
     }
@@ -71,8 +76,10 @@ export const deleteField=createAsyncThunk(
                         Authorization: `Bearer ${token}` // Send token in the request
                     }
                 });
-            return response.data;
+            notifySuccess("Delete Field Successfully")
+            return fieldId;
         }catch(err){
+            notifyError("Error Occurred while deleting field")
             console.log(err);
         }
     }
@@ -89,6 +96,7 @@ export const fetchFields = createAsyncThunk(
                     Authorization: `Bearer ${token}` // Send token in the request
                 }
             });
+
             return response.data as Field[];
         } catch (err) {
             console.error("Error fetching customers:", err);

@@ -2,6 +2,8 @@ import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import Crop from "../models/Crop.ts";
 
 import axios from "axios";
+import {notifyError, notifySuccess} from "../utils/ToastNotification.ts";
+
 
 const api = axios.create({
     baseURL: "http://localhost:3000/crops",
@@ -26,8 +28,10 @@ export const saveCrop = createAsyncThunk(
                     "Content-Type": "multipart/form-data",
                 },
             });
+            notifySuccess("Add Crop successfully");
             return response.data;
         } catch (err) {
+            notifyError("error happened while saving crop");
             console.log(err);
             throw err;
         }
@@ -47,9 +51,10 @@ export const updateCrop = createAsyncThunk(
                     "Content-Type": "multipart/form-data",
                 },
             });
+            notifySuccess("Crop Updated successfully")
             return response.data;
         } catch (err) {
-            console.log(err);
+            notifyError("error happened while updating crop");
             throw err;
         }
     }
@@ -65,9 +70,10 @@ export const deleteCrop = createAsyncThunk(
                     Authorization: `Bearer ${token}`,
                 },
             });
-            return response.data;
+            notifySuccess("Crop deleted successfully")
+            return cropId;
         } catch (err) {
-            console.log(err);
+            notifyError("Error happened while saving")
             throw err;
         }
     }
@@ -139,10 +145,12 @@ const CropSlice = createSlice({
             .addCase(saveCrop.fulfilled, (state, action) => {
                 state.loading = false;
                 state.crops.push(action.payload);
+
             })
             .addCase(saveCrop.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+
             })
 
             // 🔹 Handle Update Crop
