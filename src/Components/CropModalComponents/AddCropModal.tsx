@@ -1,11 +1,9 @@
 import {useDispatch, useSelector} from "react-redux";
 import {useEffect, useState} from "react";
 import '../../assets/CustomCss/CustomCss.css';
-
-
-import Crop from "../../models/Crop.ts";
 import {saveCrop, updateCrop} from "../../Features/CropSlice.ts";
 import {fetchFields} from "../../Features/FieldSlice.ts";
+import {notifySuccess} from "../../utils/ToastNotification.ts";
 
 
 export default function AddCropModal({isOpen, onClose,crop=null}) {
@@ -56,17 +54,7 @@ export default function AddCropModal({isOpen, onClose,crop=null}) {
         setFormData((prev) => ({ ...prev, [id]: value }));
     };
     const [previewSrc, setPreviewSrc] = useState("");
-/*    const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                setPreviewSrc(reader.result);
-                setFormData({ ...formData, image: reader.result });
-            };
-            reader.readAsDataURL(file);
-        }
-    };*/
+
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -85,7 +73,7 @@ export default function AddCropModal({isOpen, onClose,crop=null}) {
     };
 
 
-    const handleAddCrop = () => {
+    const  handleAddCrop = () => {
         console.log('Form Data:', formData);
         console.log(fields);
        // const payload = new Crop(formData.cropId, formData.fieldId,formData.commonName,formData.specificName,formData.category,formData.season,formData.image);
@@ -101,7 +89,8 @@ export default function AddCropModal({isOpen, onClose,crop=null}) {
         }
         console.log(formDataToSend);
 
-        dispatch(saveCrop(formDataToSend));
+         dispatch(saveCrop(formDataToSend));
+
         console.log('Updated crop Array:', crop);
 
 

@@ -8,23 +8,23 @@ export default function AddVehicleModalComponent({isOpen, onClose,vehicle=null})
     const dispatch = useDispatch();
     const [formData, setFormData] = useState({
         vehicleId:  "",
-        licensePlate:  "",
+        plateNumber:  "",
         category:  "",
         fuelType:  "",
         status:  "",
         remarks:  "",
-        allocatedStaff:  [],
+        staffId:  "",
     });
     useEffect(() => {
         if (vehicle) {
             setFormData({
                 vehicleId: vehicle?.vehicleId,
-                licensePlate: vehicle?.licensePlate ,
+                plateNumber: vehicle?.plateNumber ,
                 category: vehicle?.category ,
                 fuelType: vehicle?.fuelType ,
                 status: vehicle?.status ,
                 remarks: vehicle?.remarks ,
-                allocatedStaff: vehicle?.allocatedStaff ,
+                staffId: vehicle?.staffId ,
             });
         }
     }, [vehicle]);
@@ -49,7 +49,7 @@ export default function AddVehicleModalComponent({isOpen, onClose,vehicle=null})
 
     const handleAddVehicle = () => {
         console.log('Form Data:', formData);
-        const payload = new Vehicle(formData.vehicleId,formData.category,formData.fuelType,formData.licensePlate,formData.status,formData.allocatedStaff,formData.remarks)
+        const payload = new Vehicle(formData.vehicleId,formData.category,formData.fuelType,formData.plateNumber,formData.status,formData.staffId,formData.remarks)
 
         console.log(payload);
 
@@ -62,7 +62,7 @@ export default function AddVehicleModalComponent({isOpen, onClose,vehicle=null})
     const handleUpdateVehicle = () => {
         const payload = {
             vehicleId: formData.vehicleId,
-            updatedVehicle:new Vehicle(formData.vehicleId,formData.category,formData.fuelType,formData.licensePlate,formData.status,formData.allocatedStaff,formData.remarks)
+            updatedVehicle:new Vehicle(formData.vehicleId,formData.category,formData.fuelType,formData.plateNumber,formData.status,formData.staffId,formData.remarks)
         }
         dispatch(updateVehicle(payload));
 
@@ -85,7 +85,7 @@ export default function AddVehicleModalComponent({isOpen, onClose,vehicle=null})
                             <form>
                                 {/* Vehicle Id */}
                                 <div className="mb-4">
-                                    <label htmlFor="licensePlate" className="field-label">
+                                    <label htmlFor="plateNumber" className="field-label">
                                         Vehicle Id
                                     </label>
                                     <input
@@ -100,15 +100,15 @@ export default function AddVehicleModalComponent({isOpen, onClose,vehicle=null})
                                 </div>
                                 {/* License Plate */}
                                 <div className="mb-4">
-                                    <label htmlFor="licensePlate" className="field-label">
+                                    <label htmlFor="plateNumber" className="field-label">
                                         License Plate
                                     </label>
                                     <input
                                         type="text"
-                                        id="licensePlate"
-                                        name="licensePlate"
+                                        id="plateNumber"
+                                        name="plateNumber"
                                         className="field-input-css mt-2"
-                                        value={formData.licensePlate}
+                                        value={formData.plateNumber}
                                         onChange={handleInputChange}
                                         required
                                     />
@@ -170,31 +170,28 @@ export default function AddVehicleModalComponent({isOpen, onClose,vehicle=null})
                                 </div>
 
                                 {/* Assigned Staff */}
-                                <div className="mb-4">
-                                    <label className="field-label">Assigned Staff</label>
-                                    <div
-                                        className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2 border rounded p-2 overflow-y-scroll"> {/* Added grid layout */}
-                                        {staff.map(s => (
-                                            <div key={s.email} className="flex items-center">
-                                                <input
-                                                    type="checkbox"
-                                                    id={`staff-${s.email}`}
-                                                    value={s.email}
 
-                                                    checked={formData.allocatedStaff.includes(s.email)}
-                                                    onChange={(e) => {
-                                                        const updatedStaff = formData.allocatedStaff.includes(s.email)
-                                                            ? formData.allocatedStaff.filter(email => email !== s.email)
-                                                            : [...formData.allocatedStaff, s.email];
-                                                        setFormData(prev => ({...prev, allocatedStaff: updatedStaff}));
-                                                    }}
-                                                    className="mr-2"
-                                                />
-                                                <label htmlFor={`staff-${s.email}`} className="text-[16px]">
-                                                    {s.firstName} {s.lastName}
-                                                </label>
-                                            </div>
-                                        ))}
+                                <div className="mb-4">
+                                    <label htmlFor="staffId" className="field-label">
+                                        Assigned staff
+                                    </label>
+                                    <div className="flex items-center mt-1">
+                                        <select
+                                            id="staffId"
+                                            name="staffId"
+                                            className="field-input-css"
+                                            value={formData.staffId}
+                                            onChange={handleInputChange}
+                                            required
+                                        >
+                                            <option value="">Select Staff</option>
+                                            {staff.map((member) => (
+                                                <option key={member.staffId} value={member.staffId}>
+                                                    {member.firstName} {member.lastName}
+                                                </option>
+                                            ))}
+                                        </select>
+
                                     </div>
                                 </div>
 

@@ -15,8 +15,8 @@ export default function AddEquipmentModal({ isOpen, onClose, equipment = null })
         type: "",
         status: "",
         remarks:"",
-        assignedStaff: "",
-        assignedFields: "",
+        staffId: "",
+        fieldId: "",
     });
 
     useEffect(() => {
@@ -27,8 +27,8 @@ export default function AddEquipmentModal({ isOpen, onClose, equipment = null })
                 type: equipment.type,
                 status: equipment.status,
                 remarks: equipment.remarks,
-                assignedStaff: equipment.assignedStaff,
-                assignedFields: equipment.assignedFields,
+                staffId: equipment.staffId,
+                fieldId: equipment.fieldId,
             });
         }
     }, [equipment]);
@@ -56,8 +56,8 @@ export default function AddEquipmentModal({ isOpen, onClose, equipment = null })
             formData.type,
             formData.status,
             formData.remarks,
-            formData.assignedStaff,
-            formData.assignedFields
+            formData.staffId,
+            formData.fieldId
         );
 
         dispatch(addEquipment(newEquipment));
@@ -70,8 +70,8 @@ export default function AddEquipmentModal({ isOpen, onClose, equipment = null })
             formData.type,
             formData.status,
             formData.remarks,
-            formData.assignedStaff,
-            formData.assignedFields
+            formData.staffId,
+            formData.fieldId
         );
 
         dispatch(updateEquipment({ equipmentId: formData.equipmentId, updatedEquipment }));
@@ -163,19 +163,19 @@ export default function AddEquipmentModal({ isOpen, onClose, equipment = null })
 
                                 {/* Assigned Staff */}
                                 <div className="mb-4">
-                                    <label htmlFor="assignedStaff" className="field-label">
+                                    <label htmlFor="staffId" className="field-label">
                                         Assigned Staff
                                     </label>
                                     <select
-                                        id="assignedStaff"
+                                        id="staffId"
                                         className="field-input-css"
-                                        value={formData.assignedStaff}
+                                        value={formData.staffId}
                                         onChange={handleInputChange}
                                         required
                                     >
                                         <option value="">Select Staff</option>
                                         {staff.map((member: any) => (
-                                            <option key={member.email} value={member.email}>
+                                            <option key={member.staffId} value={member.staffId}>
                                                 {member.firstName} {member.lastName}
                                             </option>
                                         ))}
@@ -184,20 +184,20 @@ export default function AddEquipmentModal({ isOpen, onClose, equipment = null })
 
                                 {/* Assigned Fields */}
                                 <div className="mb-4">
-                                    <label htmlFor="assignedFields" className="field-label">
+                                    <label htmlFor="fieldId" className="field-label">
                                         Assigned Fields
                                     </label>
                                     <select
-                                        id="assignedFields"
+                                        id="fieldId"
                                         className="field-input-css"
-                                        value={formData.assignedFields}
+                                        value={formData.fieldId}
                                         onChange={handleInputChange}
                                         required
                                     >
                                         <option value="">Select Field</option>
                                         {fields.map((field: any) => (
                                             <option key={field.fieldId} value={field.fieldId}>
-                                                {field.fieldname}
+                                                {field.name}
                                             </option>
                                         ))}
                                     </select>
