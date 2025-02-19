@@ -1,30 +1,30 @@
 export default class Logs{
     logId:string;
-    description:string;
-    field:string;
-    crop:string;
-    staff:string[];
+    logDetails:string;
+    fieldId:string;
+    cropId:string;
+    staffId:string;
     status:string;
-    image:string;
+    image2:string;
     date:string | Date;
 
     constructor(
         logId: string,
-        description: string,
-        field: string,
-        crop: string,
-        staff: string[],
+        logDetails: string,
+        fieldId: string,
+        cropId: string,
+        staffId: string,
         status: string,
-        image: string,
+        image2: string,
         date: string|Date
     ) {
         this.logId = logId;
-        this.description = description;
-        this.field = field;
-        this.crop = crop;
-        this.staff = staff;
+        this.logDetails = logDetails;
+        this.fieldId = fieldId;
+        this.cropId = cropId;
+        this.staffId = staffId;
         this.status = status;
-        this.image = image;
+        this.image2 = image2;
         this.date = date;
     }
 }
