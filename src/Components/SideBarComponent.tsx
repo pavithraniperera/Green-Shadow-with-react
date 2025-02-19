@@ -1,7 +1,9 @@
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import '../assets/CustomCss/CustomCss.css'
 
+
 export  default function sideBarComponent({ isOpen }){
+
     return (
         <aside className={`bg-gradient-to-b from-green-800 to-green-950 text-white min-h-screen w-64 fixed top-0 left-0 border-r border-gray-200 drop-shadow-md transform transition-transform duration-300 z-50 ${
             isOpen ? "translate-x-0 top-20" : "-translate-x-64"
@@ -59,7 +61,7 @@ export  default function sideBarComponent({ isOpen }){
                 <li>
         <span className="side-bar-cutome-css">
           <i className="fas fa-sign-out-alt side-bar-icon"></i>
-          <Link to="/" className='side-bar-text'>Log Out</Link>
+          <Link to="/logout" className='side-bar-text'>Log Out</Link>
         </span>
                 </li>
             </ul>
