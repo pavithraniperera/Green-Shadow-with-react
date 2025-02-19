@@ -1,6 +1,5 @@
 import {useDispatch, useSelector} from "react-redux";
 import {useEffect, useState} from "react";
-import Logs from "../../models/Logs.ts";
 import {addLog, updateLog} from "../../Features/LogSlice.ts";
 
 export default function LogsAddModal({ isOpen, onClose, log = null }) {
@@ -11,26 +10,28 @@ export default function LogsAddModal({ isOpen, onClose, log = null }) {
     const dispatch = useDispatch();
     const [formData, setFormData] = useState({
         logId:"",
-        description:"",
-        field:"",
-        crop:"",
-        staff:[],
+        logDetails:"",
+        fieldId:"",
+        cropId:"",
+        staffId:'',
         status:"",
-        image:"",
+        image2:null,
     });
 
     useEffect(() => {
         if (log) {
             setFormData({
                 logId:log.logId,
-                description:log.description,
-                field:log.field,
-                crop:log.crop,
-                staff:log.staff,
+                logDetails:log.logDetails,
+                fieldId:log.fieldId,
+                cropId:log.cropId,
+                staffId:log.staffId,
                 status:log.status,
-                image:log.image,
+                image2:log.image2,
             });
+            setPreviewSrc(log.image2 ? `http://localhost:3000/${log.image2}` : "");
         }
+
     }, [log]);
 
     const handleInputChange = (e) => {
@@ -44,13 +45,11 @@ export default function LogsAddModal({ isOpen, onClose, log = null }) {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                setFormData((prev) => ({ ...prev, image: reader.result }));
-            };
-            reader.readAsDataURL(file);
+            setPreviewSrc(URL.createObjectURL(file)); // Show preview of the image
+            setFormData({ ...formData, image2: file }); // Store file object
         }
     };
+    const [previewSrc, setPreviewSrc] = useState("");
     const handleSaveLog = () => {
         if (log) {
             handleUpdateLog();
@@ -63,30 +62,42 @@ export default function LogsAddModal({ isOpen, onClose, log = null }) {
 
     const handleAddLog = () => {
         console.log("Form Data:", formData);
-        const payload = new Logs(
-            formData.logId,
-            formData.description,
-            formData.field,
-            formData.crop,
-            formData.staff,
-            formData.status,
-            formData.image,
-            today
-        );
+        // const payload = new Logs(
+        //     formData.logId,
+        //     formData.logDetails,
+        //     formData.field,
+        //     formData.crop,
+        //     formData.staff,
+        //     formData.status,
+        //     formData.image,
+        //     today
+        // );
+        const formDataToSend = new FormData();
 
-        console.log(payload);
+        formDataToSend.append("logDetails", formData.logDetails);
+        formDataToSend.append("fieldId", formData.fieldId);
+        formDataToSend.append("cropId", formData.cropId);
+        formDataToSend.append("staffId", formData.staffId);
+        formDataToSend.append("status", formData.status);
+        formDataToSend.append("date", today);
+        if (formData.image2) {
+            formDataToSend.append("image", formData.image2);
+        }
 
-        dispatch(addLog(payload));
+
+
+
+        dispatch(addLog(formDataToSend));
 
         onClose();
     };
 
     const handleUpdateLog = () => {
-        const payload = {
+      /*  const payload = {
             logId: formData.logId,
             updatedLog: new Logs(
                 formData.logId,
-                formData.description,
+                formData.logDetails,
                 formData.field,
                 formData.crop,
                 formData.staff,
@@ -94,7 +105,22 @@ export default function LogsAddModal({ isOpen, onClose, log = null }) {
                 formData.image,
                 today
             ),
-        };
+        };*/
+        const formDataToSend = new FormData();
+
+        formDataToSend.append("logDetails", formData.logDetails);
+        formDataToSend.append("fieldId", formData.fieldId);
+        formDataToSend.append("cropId", formData.cropId);
+        formDataToSend.append("staffId", formData.staffId);
+        formDataToSend.append("status", formData.status);
+        formDataToSend.append("date", today);
+        if (formData.image2) {
+            formDataToSend.append("image", formData.image2);
+        }
+        const payload = {
+            logId:formData.logId,
+            formData: formDataToSend,
+        }
 
         dispatch(updateLog(payload));
     };
@@ -133,66 +159,52 @@ export default function LogsAddModal({ isOpen, onClose, log = null }) {
                                         Log Description
                                     </label>
                                     <textarea
-                                        id="description"
-                                        name="description"
+                                        id="logDetails"
+                                        name="logDetails"
                                         className="field-input-css mt-2"
                                         rows="3"
-                                        value={formData.description}
+                                        value={formData.logDetails}
                                         onChange={handleInputChange}
                                     />
                                 </div>
 
                                 {/* Dynamic Fields */}
                                 <div className="mb-4">
-                                    <label htmlFor="field" className="field-label">Assigned Fields</label>
-                                    <select id="field" className="field-input-css"
-                                            value={formData.field}
+                                    <label htmlFor="fieldId" className="field-label">Assigned Fields</label>
+                                    <select id="fieldId" className="field-input-css"
+                                            value={formData.fieldId}
                                             onChange={handleInputChange} required>
                                         <option value="">Select Field</option>
                                         {fields.map((field) => (
-                                            <option key={field.fieldId} value={field.fieldId}>{field.fieldname}</option>
+                                            <option key={field.fieldId} value={field.fieldId}>{field.name}</option>
                                         ))}
                                     </select>
                                 </div>
                                 {/* Crops */}
                                 <div className="mb-4">
-                                    <label htmlFor="crop" className="field-label">Assigned Fields</label>
-                                    <select id="crop" className="field-input-css"
-                                            value={formData.crop ? formData.crop : "N/A"}
+                                    <label htmlFor="cropId" className="field-label">Assigned Fields</label>
+                                    <select id="cropId" className="field-input-css"
+                                            value={formData.cropId ? formData.cropId : "N/A"}
                                             onChange={handleInputChange} required>
-                                        <option value="">Select Field</option>
+                                        <option value="">Select Crop</option>
                                         {crops.map((crop) => (
                                             <option key={crop.cropId} value={crop.cropId}>{crop.commonName}</option>
                                         ))}
                                     </select>
                                 </div>
-                                {/* Staff */}
-                                <div className="mb-4">
-                                    <label className="field-label">Assigned Staff</label>
-                                    <div
-                                        className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-2 border rounded p-2 overflow-y-scroll"> {/* Added grid layout */}
-                                        {staff.map(s => (
-                                            <div key={s.email} className="flex items-center">
-                                                <input
-                                                    type="checkbox"
-                                                    id={`staff-${s.email}`}
-                                                    value={s.email}
 
-                                                    checked={formData.staff.includes(s.email)}
-                                                    onChange={(e) => {
-                                                        const updatedStaff = formData.staff.includes(s.email)
-                                                            ? formData.staff.filter(email => email !== s.email)
-                                                            : [...formData.staff, s.email];
-                                                        setFormData(prev => ({...prev, staff: updatedStaff}));
-                                                    }}
-                                                    className="mr-2"
-                                                />
-                                                <label htmlFor={`staff-${s.email}`} className="text-[16px]">
-                                                    {s.firstName} {s.lastName}
-                                                </label>
-                                            </div>
+                                {/* Staff */}
+
+                                <div className="mb-4">
+                                    <label htmlFor="staffId" className="field-label">Assigned Staff</label>
+                                    <select id="staffId" className="field-input-css"
+                                            value={formData.staffId ? formData.staffId : "N/A"}
+                                            onChange={handleInputChange} required>
+                                        <option value="">Select Staff</option>
+                                        {staff.map((s) => (
+                                            <option key={s.staffId} value={s.staffId}>{s.firstName} {s.lastName}</option>
                                         ))}
-                                    </div>
+                                    </select>
                                 </div>
 
                                 {/* Status */}
@@ -226,9 +238,9 @@ export default function LogsAddModal({ isOpen, onClose, log = null }) {
                                         className="field-input-css mt-2"
                                         onChange={handleFileChange}
                                     />
-                                    {formData.image && (
+                                    {previewSrc && (
                                         <img
-                                            src={formData.image}
+                                            src={previewSrc}
                                             alt="Preview"
                                             className="mt-2 w-32 h-32 object-cover rounded"
                                         />
