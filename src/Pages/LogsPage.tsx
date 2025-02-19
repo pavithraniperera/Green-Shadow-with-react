@@ -1,12 +1,14 @@
 import SearchBarComponent from "../Components/SearchBarComponent.tsx";
 import {useDispatch, useSelector} from "react-redux";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import AddBtnComponent from "../Components/AddBtnComponent.tsx";
 
 import LogsAddModal from "../Components/LogsModalComponents/LogsAddModal.tsx";
 import Logs from "../models/Logs.ts";
 import MainContainer from "../Components/MainContainer.tsx";
-import {deleteLog} from "../Features/LogSlice.ts";
+import {deleteLog, fetchLogs} from "../Features/LogSlice.ts";
+import {fetchCrops} from "../Features/CropSlice.ts";
+import {fetchFields} from "../Features/FieldSlice.ts";
 
 export default function LogsPage() {
     const dispatch = useDispatch();
@@ -17,16 +19,30 @@ export default function LogsPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedLog, setSelectedLog] = useState<Logs | null>(null);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    useEffect(() => {
+
+        dispatch(fetchCrops());
+        dispatch(fetchLogs())
+    }, [dispatch]);
     const getField =(fieldId:string) => {
         return fields.find(field => field.fieldId === fieldId)
 
     }
-    const getStaff=(email:string)=>{
-        return staff.find(staffMember=>staffMember.email === email)
+    const getStaff=(staffId:string)=>{
+        return staff.find(staffMember=>staffMember.staffId === staffId)
     }
     const getCrop=(cropId:string)=>{
         return crops.find(crop=>crop.cropId === cropId)
     }
+    const getImageSrc = (image: string | File | null) => {
+        if (!image) return "/fallback-image.jpg"; // Default fallback image
+
+        if (typeof image === "string") {
+            return `http://localhost:3000/${image}`; // Correctly prepend backend URL
+        }
+
+        return URL.createObjectURL(image); // If it's a file (uploaded from frontend), create a blob URL
+    };
     const openLogModal = () => {
         setIsModalOpen(true)
         closeViewModal()
@@ -71,9 +87,19 @@ export default function LogsPage() {
 
                 {/* Field/Crop and Status Section */}
                 <div className="log-header flex justify-between items-center mb-4">
-                    <div className="log-category text-lg font-semibold text-green-800">
-                        {log.crop || "No Crop"} / {log.field||"No Field"}
-                    </div>
+                        <div className="log-category text-lg font-semibold text-green-800">
+                            {log.cropId
+                                ? crops.find(c => c.cropId === log.cropId)?.cropName || "Unknown Crop"
+                                : ""
+                            }
+                            {log.cropId && log.fieldId ? " / " : ""}
+                            {log.fieldId
+                                ? fields.find(f => f.fieldId === log.fieldId)?.name || "Unknown Field"
+                                : ""
+                            }
+                        </div>
+
+
                     <div
                         className={`log-status px-3 py-1 rounded-full text-sm font-medium ${
                             log.status.toLowerCase() === "complete"
@@ -91,13 +117,13 @@ export default function LogsPage() {
                 <div className="log-middle flex gap-4">
                     {/* Description */}
                     <div className="log-description flex-1 text-gray-700">
-                        {log.description || "No description available"}
+                        {log.logDetails || "No description available"}
                     </div>
                     {/* Image */}
                     <div className="log-image w-20 h-20 flex-shrink-0 overflow-hidden rounded-lg">
-                        {log.image ? (
+                        {log.image2 ? (
                             <img
-                                src={log.image}
+                                src={getImageSrc(log.image2)}
                                 alt="Log"
                                 className="w-full h-full object-cover"
                             />
@@ -151,8 +177,8 @@ export default function LogsPage() {
                         <div className="p-6 border-b border-gray-300">
                             <img
                                 src={
-                                    selectedLog.image
-                                        ? selectedLog.image
+                                    selectedLog.image2
+                                        ? getImageSrc(selectedLog.image2)
                                         : "https://via.placeholder.com/600x200?text=Log+Image"
                                 }
                                 alt="Log Image"
@@ -214,7 +240,7 @@ export default function LogsPage() {
                                         id="details"
                                         className="field-input-css"
                                         rows="3"
-                                        value={selectedLog.description || "No description available"}
+                                        value={selectedLog.logDetails || "No description available"}
                                         readOnly
                                     ></textarea>
                                 </div>
@@ -240,7 +266,7 @@ export default function LogsPage() {
                                         type="text"
                                         id="fields"
                                         className="field-input-css"
-                                        value={getField(selectedLog.field).fieldname || "Not available"}
+                                        value={selectedLog.fieldId? getField(selectedLog.fieldId).name : 'No field '}
                                         readOnly
                                     />
                                 </div>
@@ -252,31 +278,21 @@ export default function LogsPage() {
                                         type="text"
                                         id="crop"
                                         className="field-input-css"
-                                        value={getCrop(selectedLog.crop).commonName || "Not available"}
+                                        value={selectedLog.cropId? getCrop(selectedLog.cropId).commonName : 'No Crop '}
                                         readOnly
                                     />
                                 </div>
 
                                 {/* Staff Members */}
                                 <div>
-                                    <label htmlFor="staffMembers" className="field-label">
-                                        Staff Members
+                                    <label htmlFor="staff" className="field-label">
+                                        Crops
                                     </label>
                                     <input
                                         type="text"
-                                        id="staffMembers"
+                                        id="staff"
                                         className="field-input-css"
-                                        value={
-                                            selectedLog.staff && selectedLog.staff.length > 0
-                                                ? selectedLog.staff
-                                                    .map((email: string) => {
-                                                        const staffMember = getStaff(email); // Get the staff object
-                                                        return staffMember ? staffMember.firstName+" "+staffMember.lastName : null; // Extract the name property
-                                                    })
-                                                    .filter((name) => name) // Remove null values in case of unmatched emails
-                                                    .join(", ")
-                                                : "No staff assigned"
-                                        }
+                                        value={getStaff(selectedLog.staffId).firstName || "Not available"}
                                         readOnly
                                     />
                                 </div>

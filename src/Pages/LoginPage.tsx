@@ -5,10 +5,13 @@ import SignInInputFields from "../Components/SignInInputFields.tsx";
 import {useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
-import {login, loginUser} from "../Features/AuthSlice.ts";
+import { loginUser} from "../Features/AuthSlice.ts";
 import {toast} from "react-toastify";
 import {fetchFields} from "../Features/FieldSlice.ts";
 import {fetchCrops} from "../Features/CropSlice.ts";
+import {fetchStaff} from "../Features/StaffSlice.ts";
+import {fetchVehicles} from "../Features/VehicleSlice.ts";
+import {fetchEquipment} from "../Features/EquipmentSlice.ts";
 
 export default  function LoginPage() {
     const [email, setEmail] = useState("");
@@ -34,9 +37,10 @@ export default  function LoginPage() {
             toast.success(successMessage);
              dispatch(fetchFields())
              dispatch(fetchCrops())
+             dispatch(fetchStaff())
+             dispatch(fetchVehicles())
+             dispatch(fetchEquipment())
             setTimeout(() => navigate("dashboard"), 1000);
-        }else {
-            toast.error('failed to login');
         }
     }, [successMessage, navigate]);
     const handleSignUpNavigation = () => {
