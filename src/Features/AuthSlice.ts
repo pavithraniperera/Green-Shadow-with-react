@@ -1,7 +1,6 @@
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import axios from "axios";
-import {fetchFields} from "./FieldSlice.ts";
-import {fetchCrops} from "./CropSlice.ts";
+
 
 
 
