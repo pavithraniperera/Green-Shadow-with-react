@@ -3,9 +3,7 @@ import {AuthLayout} from "./Components/AuthLayout.tsx";
 import LoginPage from "./Pages/LoginPage.tsx";
 import SignUpPage from "./Pages/SignUpPage.tsx";
 import {Provider} from "react-redux";
- import store from "./Store/Store.ts";
-//import  SidBarComponent from "./Components/SideBarComponent.tsx"
-//import TopHeaderComponent from "./Components/TopHeaderComponent.tsx";
+ import {store} from "./Store/Store.ts";
 import {MainLayout} from "./Components/MainLayout.tsx";
 import DashboardPage from "./Pages/DashboardPage.tsx";
 import FieldPage from "./Pages/FieldsPage.tsx";
@@ -14,6 +12,9 @@ import StaffPage from "./Pages/StaffPage.tsx";
 import LogsPage from "./Pages/LogsPage.tsx";
 import VehiclePage from "./Pages/VehiclePage.tsx";
 import EquipmentPage from "./Pages/EquipmentPage.tsx";
+import ProfilePage from "./Pages/Profile.tsx";
+import {ToastContainer} from "react-toastify";
+import LogoutPage from "./Pages/LogoutPage.tsx";
 
 
 function App() {
@@ -38,6 +39,9 @@ function App() {
                   { path: "logs", element: <LogsPage /> },
                   { path: "vehicles", element: <VehiclePage /> },
                   { path: "equipment", element: <EquipmentPage /> },
+                  { path: "profile", element: <ProfilePage /> },
+                  { path: "logout", element: <LogoutPage /> },
+
               ],
           }
         ]
@@ -46,6 +50,7 @@ function App() {
 
   return (
     <>
+        <ToastContainer />
       <Provider store={store}>
         <RouterProvider router={routes} />
       </Provider>

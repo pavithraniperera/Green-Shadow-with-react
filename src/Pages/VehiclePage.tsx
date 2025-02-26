@@ -1,21 +1,32 @@
 import SearchBarComponent from "../Components/SearchBarComponent.tsx";
 import AddBtnComponent from "../Components/AddBtnComponent.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import AddVehicleModalComponent from "../Components/VehicleAddModalComponent/AddVehicleModal.tsx";
 import Vehicle from "../models/Vehicle.ts";
 import MainContainer from "../Components/MainContainer.tsx";
 import {useDispatch, useSelector} from "react-redux";
-import {deleteVehicle} from "../Features/VehicleSlice.ts";
+import {deleteVehicle, fetchVehicles} from "../Features/VehicleSlice.ts";
+
+import {fetchFields} from "../Features/FieldSlice.ts";
+import {fetchStaff} from "../Features/StaffSlice.ts";
 
 export default function VehiclePage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const dispatch = useDispatch();
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const vehicles = useSelector((state: any) => state.vehicle.vehicles)
+    const staff = useSelector((state: any) => state.staff.staff)
     const openVehicleModal = () => {
         setIsModalOpen(true)
         closeViewModal()
     };
+    useEffect(() => {
+
+        dispatch(fetchVehicles());
+        dispatch(fetchFields());
+        dispatch(fetchStaff())
+    }, [dispatch]);
+
     const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
     const openViewModal = (vehicle: Vehicle) => {
         setSelectedVehicle(vehicle);
@@ -45,7 +56,7 @@ export default function VehiclePage() {
         return (
             <tr className="table-row" data-status={vehicle.status.toLowerCase()} onClick={() => openViewModal(vehicle)}>
                 <td className="table-data">{vehicle.category}</td>
-                <td className="table-data">{vehicle.licensePlate}</td>
+                <td className="table-data">{vehicle.plateNumber}</td>
                 <td className="table-data">{vehicle.fuelType}</td>
                 <td className="table-data">{vehicle.status}</td>
                 <td className="table-data">{vehicle.remarks || "N/A"}</td>
@@ -121,14 +132,14 @@ export default function VehiclePage() {
 
                                 {/* License Plate */}
                                 <div>
-                                    <label htmlFor="licensePlate" className="field-label">
+                                    <label htmlFor="plateNumber" className="field-label">
                                         License Plate
                                     </label>
                                     <input
                                         type="text"
-                                        id="licensePlate"
+                                        id="plateNumber"
                                         className="field-input-css"
-                                        value={selectedVehicle.licensePlate}
+                                        value={selectedVehicle.plateNumber}
                                         readOnly
                                     />
                                 </div>
@@ -177,22 +188,28 @@ export default function VehiclePage() {
 
                                 {/* Allocated Staff */}
                                 <div>
-                                    <label htmlFor="allocatedStaff" className="field-label">
-                                        Allocated Staff
+                                    <label htmlFor="staffId" className="field-label">
+                                        Allocated staff
                                     </label>
                                     <input
                                         type="text"
-                                        id="allocatedStaff"
+                                        id="staffId"
+                                        name="staffId"
                                         className="field-input-css"
-                                        value={selectedVehicle.allocatedStaff.join(", ")} // Join staff names with comma and space
+                                        value={
+                                            staff.find(s => s.staffId === selectedVehicle.staffId)
+                                                ? `${staff.find(s => s.staffId === selectedVehicle.staffId)?.firstName} ${staff.find(s => s.staffId === selectedVehicle.staffId)?.lastName}`
+                                                : "N/A"
+                                        }
                                         readOnly
                                     />
+
                                 </div>
 
                                 {/* Remarks */}
                                 <div>
                                     <label htmlFor="remarks" className="field-label">
-                                        Remarks
+                                    Remarks
                                     </label>
                                     <textarea
                                         className="field-input-css"

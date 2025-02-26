@@ -3,12 +3,13 @@ import SearchBarComponent from "../Components/SearchBarComponent.tsx";
 import {Staff} from "../models/Staff.ts";
 import {useDispatch, useSelector} from "react-redux";
 import MainContainer from "../Components/MainContainer.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import AddBtnComponent from "../Components/AddBtnComponent.tsx";
 
 import AddStaffModal from "../Components/StaffModalComponents/AddStaffModal.tsx";
 import '../assets/CustomCss/CustomCss.css';
-import {deleteStaff} from "../Features/StaffSlice.ts";
+import {deleteStaff, fetchStaff} from "../Features/StaffSlice.ts";
+import {fetchFields} from "../Features/FieldSlice.ts";
 
 
 export default function StaffPage() {
@@ -26,6 +27,11 @@ export default function StaffPage() {
         setIsModalOpen(false);
 
     }
+    useEffect(() => {
+
+        dispatch(fetchStaff());
+        dispatch(fetchFields())
+    }, [dispatch]);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false); // View Modal State
     const [selectedStaff, setSelectedStaff] = useState<Staff | null>(null);
     const openViewModal = (staff: Staff) => {
@@ -45,7 +51,7 @@ export default function StaffPage() {
 
     }
     const handleDelete = (selectedStaff:Staff) => {
-        dispatch(deleteStaff(selectedStaff.email));
+        dispatch(deleteStaff(selectedStaff.staffId));
         closeViewModal()
         setSelectedStaff(null)
     }
@@ -55,18 +61,17 @@ export default function StaffPage() {
     }
     const formatDate = (date) => new Date(date).toISOString().split('T')[0];
 
-    const headers =["FirstName","LastName","Gender","Join Date","Email","Contact","Designation","Role"];
+    const headers =["FirstName","LastName","Gender","Email","Contact","Designation","Role"];
 
     const renderStaffRow = (staff: Staff, index: number) => {
-        const joinDate = staff.joinDate.toLocaleDateString();
+
          return (
              <tr key={index} className="table-row" onClick={() => openViewModal(staff)}>
                  <td  className="table-data">{staff.firstName}</td>
                  <td  className="table-data">{staff.lastName}</td>
                  <td  className="table-data">{staff.gender}</td>
-                 <td  className="table-data">{joinDate}</td>
                  <td  className="table-data">{staff.email}</td>
-                 <td  className="table-data">{staff.contactNumber}</td>
+                 <td  className="table-data">{staff.contact}</td>
                  <td  className="table-data">{staff.designation}</td>
                  <td  className="table-data">{staff.role}</td>
              </tr>
@@ -168,7 +173,7 @@ export default function StaffPage() {
                                         type="text"
                                         id="contact"
                                         className="field-input-css"
-                                        value={selectedStaff.contactNumber}
+                                        value={selectedStaff.contact}
                                         readOnly
                                     />
                                 </div>
@@ -215,6 +220,20 @@ export default function StaffPage() {
                                     />
                                 </div>
 
+                                {/* date of birth */}
+                                <div>
+                                    <label htmlFor="dob" className="field-label">
+                                        Date of Birth
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="dob"
+                                        className="field-input-css"
+                                        value={formatDate(selectedStaff.dob)}
+                                        readOnly
+                                    />
+                                </div>
+
                                 {/* Role */}
                                 <div>
                                     <label htmlFor="role" className="field-label">
@@ -230,27 +249,27 @@ export default function StaffPage() {
                                 </div>
 
                                 {/* Assigned Fields */}
-                                <div className="mb-4">
-                                    <label htmlFor="assignedField" className="field-label">Assigned Fields</label>
-                                    <select
-                                        id="assignedField"
+                                <div>
+                                    <label htmlFor="allocatedStaff" className="field-label">
+                                        Allocated Fields
+                                    </label>
+                                    <input
+                                        type="text"
+                                        id="allocatedStaff"
                                         className="field-input-css"
-                                        value={selectedStaff.assignedField}
-                                        disabled
-                                    >
-                                        {selectedStaff.assignedField && (
-                                            <option value={selectedStaff.assignedField}>
-                                                {getField(selectedStaff.assignedField)?.fieldname || "Unknown Field"}
-                                            </option>
-                                        )}
-                                    </select>
+                                        value={selectedStaff.fieldIds
+                                            .map(fieldId => fields.find(f => f.fieldId === fieldId)?.name || "Unknown")
+                                            .join(", ")}
+                                        readOnly
+                                    />
+
                                 </div>
                             </form>
                         </div>
 
                         {/* Modal Footer */}
                         <div className="p-6 border-t border-gray-300 flex justify-end space-x-3">
-                            <button
+                        <button
                                 type="button"
                                 className="modal-btn"
                                 onClick={closeViewModal}

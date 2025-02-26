@@ -5,7 +5,7 @@ export default class Crop{
     category:string
     season:string
     fieldId:string
-    image:string
+    image1:string
 
     constructor(cropId:string,fieldId:string,commonName:string,specificName:string,category:string,season:string,image:string,){
         this.cropId = cropId;
@@ -14,7 +14,7 @@ export default class Crop{
         this.category = category;
         this.season = season;
         this.fieldId = fieldId;
-        this.image = image;
+        this.image1 = image;
 
     }
 

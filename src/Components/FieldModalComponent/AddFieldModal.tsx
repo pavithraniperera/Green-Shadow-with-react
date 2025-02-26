@@ -1,29 +1,26 @@
 import '../../assets/CustomCss/CustomCss.css';
 import MapComponent from "./MapComponent.tsx";
 import {useDispatch, useSelector} from "react-redux";
-import {useEffect, useMemo, useState} from "react";
-import {Field} from "../../models/Field.ts";
-import {addField, updateField} from "../../Features/FieldSlice.ts";
+import {useEffect, useState} from "react";
+
+import { saveField, updateField} from "../../Features/FieldSlice.ts";
 
 const addFieldModal = ({ isOpen, onClose, field = null }) => {
     const dispatch = useDispatch();
     const [formData, setFormData] = useState({
         fieldId: '',
-        fieldname: '',
-        fieldsize: 0,
+        name: '',
+        size: 0,
         location: '',
-        images: ["",""], // Array to hold image data in base64 format
-
-        }
-
-    );
-    useEffect(() => {
+        images: [null, null] as (File | null)[], // Store files instead of base64
+    });
+  /*  useEffect(() => {
         if (field) {
             const imageArray =[field.image1,field.image2];
             setFormData({
                 fieldId:field.fieldId,
-                fieldname:field.fieldname,
-                fieldsize:field.fieldsize,
+                name:field.name,
+                size:field.size,
                 location:field.location,
                 images:imageArray,
             });
@@ -38,7 +35,32 @@ const addFieldModal = ({ isOpen, onClose, field = null }) => {
 
         }
 
+    }, [field]);*/
+    useEffect(() => {
+        if (field) {
+            const imageArray = [field.image1, field.image2].map(image => {
+                if (!image) return null; // Handle missing images
+                return typeof image === "string" ?  `http://localhost:3000/${image}` : URL.createObjectURL(image);
+            });
+
+            setFormData({
+                fieldId: field.fieldId,
+                name: field.name,
+                size: field.size,
+                location: field.location,
+                images: imageArray, // Store correct image references
+            });
+
+            imageArray.forEach((image, index) => {
+                const previewElement = document.getElementById(`preview${index + 1}`) as HTMLImageElement;
+                if (previewElement && image) {
+                    previewElement.src = image;
+                    previewElement.classList.remove("hidden");
+                }
+            });
+        }
     }, [field]);
+
 
 
 
@@ -55,11 +77,22 @@ const addFieldModal = ({ isOpen, onClose, field = null }) => {
 
     const handleAddField = () => {
         console.log('Form Data:', formData);
-        const payload = new Field(formData.fieldId, formData.fieldname,formData.fieldsize,formData.location,formData.images[0],formData.images[1])
+       // const payload = new Field(formData.name,formData.size,formData.location,formData.images[0],formData.images[1])
+        const payload = new FormData();
+        payload.append("name", formData.name);
+        payload.append("size", formData.size.toString());
+        payload.append("location", formData.location);
+
+        if (formData.images[0]) {
+            payload.append("images", formData.images[0]); // Append first image
+        }
+        if (formData.images[1]) {
+            payload.append("images", formData.images[1]); // Append second image
+        }
 
         console.log(payload);
 
-        dispatch(addField(payload));
+        dispatch(saveField(payload));
         console.log('Updated Fields Array:', fields);
 
 
@@ -67,9 +100,22 @@ const addFieldModal = ({ isOpen, onClose, field = null }) => {
         onClose();
     };
     const updateFields = () => {
-        const payload = {
+       /* const payload = {
             fieldId: formData.fieldId,
-            updatedField:new Field(formData.fieldId, formData.fieldname,formData.fieldsize,formData.location,formData.images[0],formData.images[1])
+            updatedField:new Field(formData.fieldId, formData.name,formData.size,formData.location,formData.images[0],formData.images[1])
+        }*/
+        console.log('Field Form Data:', formData);
+        const payload = new FormData();
+        payload.append("fieldId", formData.fieldId);
+        payload.append("name", formData.name);
+        payload.append("size", formData.size.toString());
+        payload.append("location", formData.location);
+
+        if (formData.images[0]) {
+            payload.append("images", formData.images[0]);
+        }
+        if (formData.images[1]) {
+            payload.append("images", formData.images[1]);
         }
         dispatch(updateField(payload));
         console.log('Updated Fields Array:', fields);
@@ -87,25 +133,26 @@ const addFieldModal = ({ isOpen, onClose, field = null }) => {
     const previewImage = (e: React.ChangeEvent<HTMLInputElement>, previewId: string, index: number) => {
         const file = e.target.files?.[0];
         if (file) {
+            // Store the file object in state
+            setFormData((prev) => {
+                const updatedImages = [...prev.images];
+                updatedImages[index] = file;
+                return { ...prev, images: updatedImages };
+            });
+
+            // Show image preview
             const reader = new FileReader();
             reader.onload = () => {
-                const result = reader.result as string;
-                // Update the formData with the selected image
-                setFormData((prev) => {
-                    const updatedImages = [...prev.images];
-                    updatedImages[index] = result; // Store Base64 string
-                    return { ...prev, images: updatedImages };
-                });
-                // Update the image preview
                 const previewElement = document.getElementById(previewId) as HTMLImageElement;
                 if (previewElement) {
-                    previewElement.src = result;
+                    previewElement.src = reader.result as string;
                     previewElement.classList.remove('hidden');
                 }
             };
-            reader.readAsDataURL(file); // Convert file to Base64
+            reader.readAsDataURL(file);
         }
     };
+
     return (
         <>
             {isOpen && (
@@ -142,9 +189,9 @@ const addFieldModal = ({ isOpen, onClose, field = null }) => {
                                     </label>
                                     <input
                                         type="text"
-                                        id="fieldname"
+                                        id="name"
                                         className="field-input-css"
-                                        value={formData.fieldname}
+                                        value={formData.name}
                                         required
                                         onChange={handleInputChange}
                                     />
@@ -169,9 +216,9 @@ const addFieldModal = ({ isOpen, onClose, field = null }) => {
                                     </label>
                                     <input
                                         type="number"
-                                        id="fieldsize"
+                                        id="size"
                                         className="field-input-css"
-                                        value={formData.fieldsize}
+                                        value={formData.size}
                                         required
                                         onChange={handleInputChange}
                                     />

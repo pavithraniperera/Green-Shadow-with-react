@@ -2,9 +2,9 @@ export default class Vehicle {
     vehicleId: string;
     category: string;
     fuelType: string;
-    licensePlate: string;
+    plateNumber: string;
     status: string;
-    allocatedStaff: string[]; // Array of staff IDs or names
+    staffId: string; // Array of staff IDs or names
     remarks: string;
 
     constructor(
@@ -13,15 +13,15 @@ export default class Vehicle {
         fuelType: string,
         licensePlate: string,
         status: string,
-        allocatedStaff: string[],
+        allocatedStaff: string,
         remarks: string
     ) {
         this.vehicleId = vehicleId;
         this.category = category;
         this.fuelType = fuelType;
-        this.licensePlate = licensePlate;
+        this.plateNumber = licensePlate;
         this.status = status;
-        this.allocatedStaff = allocatedStaff;
+        this.staffId = allocatedStaff;
         this.remarks = remarks;
     }
 

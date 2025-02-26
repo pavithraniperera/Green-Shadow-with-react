@@ -2,16 +2,23 @@
 import LogoSection from "../Components/LogoSection.tsx";
 import SignInButtonGroup from "../Components/SignInButtonGroup.tsx";
 import SignInInputFields from "../Components/SignInInputFields.tsx";
-import {useState} from "react";
-import {useDispatch} from "react-redux";
+import {useEffect, useState} from "react";
+import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
-import {login} from "../Features/AuthSlice.ts";
+import { loginUser} from "../Features/AuthSlice.ts";
+import {toast} from "react-toastify";
+import {fetchFields} from "../Features/FieldSlice.ts";
+import {fetchCrops} from "../Features/CropSlice.ts";
+import {fetchStaff} from "../Features/StaffSlice.ts";
+import {fetchVehicles} from "../Features/VehicleSlice.ts";
+import {fetchEquipment} from "../Features/EquipmentSlice.ts";
 
 export default  function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const successMessage = useSelector((state) => state.auth.successMessage);
     const handleLogin = () => {
         console.log(password);
         if (email && password) {
@@ -20,10 +27,22 @@ export default  function LoginPage() {
                 password: password
 
             }
-            dispatch(login(UserData));
-            navigate("dashboard");
+            dispatch(loginUser(UserData));
+
+
         }
     }
+    useEffect(() => {
+        if (successMessage!='null') {
+            toast.success(successMessage);
+             dispatch(fetchFields())
+             dispatch(fetchCrops())
+             dispatch(fetchStaff())
+             dispatch(fetchVehicles())
+             dispatch(fetchEquipment())
+            setTimeout(() => navigate("dashboard"), 1000);
+        }
+    }, [successMessage, navigate]);
     const handleSignUpNavigation = () => {
         console.log(" go to signing up");
         navigate("signup");

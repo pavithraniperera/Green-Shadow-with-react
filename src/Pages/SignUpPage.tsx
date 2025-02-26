@@ -1,24 +1,41 @@
 import LogoSection from "../Components/LogoSection.tsx";
 import SignInButtonGroup from "../Components/SignInButtonGroup.tsx";
 import SignInInputFields from "../Components/SignInInputFields.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {registerUser} from "../Features/AuthSlice.ts";
+import {User} from "../models/User.ts";
+import {toast} from "react-toastify";
 
 export default function SignUpPage(){
     const[email, setEmail] = useState("");
     const[password, setPassword] = useState("");
     const[role, setRole] = useState("");
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const successMessage = useSelector((state) => state.auth.successMessage);
 
-    const handleSignUp = () => {
+    const handleSignUp = async () => {
         console.log("signing up");
         console.log(email, password,role);
         if (email && password && role ) {
             localStorage.setItem("email", email);
             localStorage.setItem("role", role);
-            navigate("/");
+            const newUser = new User(email,password,role)
+            dispatch(registerUser(newUser));
+
         }
     }
+
+    useEffect(() => {
+        if (successMessage!='null') {
+            toast.success(successMessage);
+            setTimeout(() => navigate("/"), 2000);
+        }else{
+            toast.error("Failed to register");
+        }
+    }, [successMessage, navigate]);
     const navigateLogin = () => {
         console.log("logged in");
          navigate("/");

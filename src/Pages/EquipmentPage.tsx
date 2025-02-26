@@ -3,9 +3,12 @@ import {useDispatch, useSelector} from "react-redux";
 import Equipment from "../models/Equipment.ts";
 import MainContainer from "../Components/MainContainer.tsx";
 import AddBtnComponent from "../Components/AddBtnComponent.tsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import AddEquipmentModal from "../Components/EquipmentModalComponents/AddEquipmentModal.tsx";
-import {deleteEquipment} from "../Features/EquipmentSlice.ts";
+import {deleteEquipment, fetchEquipment} from "../Features/EquipmentSlice.ts";
+import {fetchVehicles} from "../Features/VehicleSlice.ts";
+import {fetchFields} from "../Features/FieldSlice.ts";
+import {fetchStaff} from "../Features/StaffSlice.ts";
 
 
 export default function EquipmentPage() {
@@ -18,9 +21,17 @@ export default function EquipmentPage() {
         return fields.find(field => field.fieldId === fieldId)
 
     }
-    const getStaff=(email:string)=>{
-        return staff.find(staffMember=>staffMember.email === email)
+
+    const getStaff=(staffId:string)=>{
+        return staff.find(staffMember=>staffMember.staffId === staffId)
     }
+    useEffect(() => {
+
+        dispatch(fetchVehicles());
+        dispatch(fetchFields());
+        dispatch(fetchStaff())
+        dispatch(fetchEquipment())
+    }, [dispatch]);
     const openEquipModal = () => {
         setIsModalOpen(true)
         //closeViewModal()
@@ -62,8 +73,8 @@ export default function EquipmentPage() {
                 <td className="table-data">{equip.name}</td>
                 <td className="table-data">{equip.type}</td>
                 <td className="table-data">{equip.status}</td>
-                <td className="table-data">{getStaff(equip.assignedStaff).firstName} {getStaff(equip.assignedStaff).lastName}</td>
-                <td className="table-data">{getField(equip.assignedFields).fieldname}</td>
+                <td className="table-data">{getStaff(equip.staffId).firstName} {getStaff(equip.staffId).lastName}</td>
+                <td className="table-data">{getField(equip.fieldId).name}</td>
             </tr>
         )
     }
@@ -177,7 +188,7 @@ export default function EquipmentPage() {
                                         type="text"
                                         id="EqAssignedStaff"
                                         className="field-input-css"
-                                        value={selectedEquip.assignedStaff || "Unassigned"}
+                                        value={getStaff(selectedEquip.staffId).firstName|| "Unassigned"}
                                         readOnly
                                     />
                                 </div>
@@ -191,7 +202,7 @@ export default function EquipmentPage() {
                                         type="text"
                                         id="assignedField"
                                         className="field-input-css"
-                                        value={selectedEquip.assignedFields || "Unassigned"}
+                                        value={getField(selectedEquip.fieldId).name || "Unassigned"}
                                         readOnly
                                     />
                                 </div>

@@ -6,13 +6,20 @@ import AddFieldModal from "../Components/FieldModalComponent/AddFieldModal.tsx";
 import {useDispatch, useSelector} from "react-redux";
 import '../assets/CustomCss/CustomCss.css'
 import {Field} from "../models/Field.ts";
-import {deleteField} from "../Features/FieldSlice.ts";
+import {deleteField, fetchFields} from "../Features/FieldSlice.ts";
 
 export default function FieldPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const fields = useSelector((state: any) => state.field.fields);
     const [currentImageIndices, setCurrentImageIndices] =useState<number[]>([])
     const dispatch = useDispatch();
+    const { fields, loading, error,successMessage } = useSelector((state) => state.field);
+    useEffect(() => {
+
+        dispatch(fetchFields());
+        console.log(fields);
+    }, [dispatch]);
+
+
     // Update currentImageIndices when fields change
     useEffect(() => {
         if (fields.length > 0) {
@@ -41,12 +48,14 @@ export default function FieldPage() {
     const [selectedField, setSelectedField] = useState<Field | null>(null);
 
     const openViewModal = (field: Field) => {
+        console.log(field);
+
+        setIsViewModalOpen(true);
         setSelectedField(field);
         console.log(selectedField);
-        setIsViewModalOpen(true);
     };
     const closeViewModal = () => {
-        setSelectedField(null);
+
         setIsViewModalOpen(false);
     };
     const handleUpdateModal=(selectedField:Field)=>{
@@ -57,69 +66,69 @@ export default function FieldPage() {
 
     }
     const handleDelete = (selectedField:Field) => {
+        console.log(selectedField)
         dispatch(deleteField(selectedField.fieldId));
         closeViewModal()
         setSelectedField(null)
     }
+    // Check if image paths exist or need to be converted
+    const getImageSrc = (image: string | File | null) => {
+        if (!image) return "/fallback-image.jpg"; // Default fallback image
 
-    // field card
+        if (typeof image === "string") {
+            return `http://localhost:3000/${image}`; // Correctly prepend backend URL
+        }
+
+        return URL.createObjectURL(image); // If it's a file (uploaded from frontend), create a blob URL
+    };
+
     const renderFieldCard = (field: Field, index: number) => {
 
-        const images =[field.image1,field.image2];
+        const images = [getImageSrc(field.image1), getImageSrc(field.image2)];
+
         const currentImageIndex = currentImageIndices[index];
 
-
-
-
         return (
-
-
             <div
                 key={index}
                 className="card-custom"
                 data-code={field.fieldId}
-                data-name={field.fieldname}
-                data-size={field.fieldsize}
+                data-name={field.name}
+                data-size={field.size}
                 data-location={field.location}
-                data-image1={field.image1}
-                data-image2={field.image2}
+                data-image1={getImageSrc(field.image1)}
+                data-image2={getImageSrc(field.image2)}
             >
                 {/* Image Slider */}
-                <div className="slider">
+                <div className="slider relative">
                     <img
                         src={images[currentImageIndex]}
                         alt={`Field Image ${currentImageIndex + 1}`}
-                        className={` inset-0 w-[250px] h-[200px] object-cover  transition-opacity duration-500 mx-auto mt-2 `}
+                        className="inset-0 w-[250px] h-[200px] object-cover transition-opacity duration-500 mx-auto mt-2"
                     />
-
                     <div className="slider-buttons flex justify-between absolute inset-y-1/2 w-full px-4">
-                        <button
-                            className="slider-button "
-                            onClick={() => handlePrevImage(index)}
-                        >
+                        <button className="slider-button" onClick={() => handlePrevImage(index)}>
                             &#10094;
                         </button>
-                        <button
-                            className="slider-button "
-                            onClick={() => handleNextImage(index)}
-                        >
+                        <button className="slider-button" onClick={() => handleNextImage(index)}>
                             &#10095;
                         </button>
                     </div>
                 </div>
+
                 {/* Card Content */}
                 <div className="card-content p-4">
                     <div className="field-info mb-4">
-                        <h4 >Field Name</h4>
-                        <p >{field.fieldname}</p>
+                        <h4>Field Name</h4>
+                        <p>{field.name}</p>
                     </div>
                     <div className="field-info mb-4">
-                        <h4 >Size</h4>
-                        <p >{field.fieldsize} Sq. meters</p>
+                        <h4>Size</h4>
+                        <p>{field.size} Sq. meters</p>
                     </div>
                     <div className="field-info mb-4">
                         <h4>Location</h4>
-                        <p >GPS Coordinates: {field.location}</p>
+                        <p>GPS Coordinates: {field.location}</p>
                     </div>
                     <div className="view-more-container flex justify-center mt-4">
                         <button
@@ -132,10 +141,11 @@ export default function FieldPage() {
                     </div>
                 </div>
             </div>
-
-
-        )
+        );
     };
+
+
+
     return (
         <>
             <SearchBarComponent placeholder="Search Field by Location.." onChange=""/>
@@ -196,7 +206,7 @@ export default function FieldPage() {
                                     <input
                                         type="text"
                                         className="field-input-css"
-                                        value={selectedField.fieldname || ""}
+                                        value={selectedField.name || ""}
                                         readOnly
                                     />
                                 </div>
@@ -216,7 +226,7 @@ export default function FieldPage() {
                                     <input
                                         type="text"
                                         className="field-input-css"
-                                        value={selectedField.fieldsize || ""}
+                                        value={selectedField.size || ""}
                                         readOnly
                                     />
                                 </div>
@@ -224,12 +234,12 @@ export default function FieldPage() {
                                     <label className="block text-sm font-medium text-gray-700">Field Images</label>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2"> {/* Image Gallery */}
                                         <img
-                                            src={selectedField.image1 || ""}
+                                            src={getImageSrc(selectedField.image1) || ""}
                                             alt="Field Image 1"
                                             className="w-full h-48 object-cover rounded-lg border border-gray-300 shadow-md"
                                         />
                                         <img
-                                            src={selectedField.image2 || ""}
+                                            src={getImageSrc(selectedField.image2) || ""}
                                             alt="Field Image 2"
                                             className="w-full h-48 object-cover rounded-lg border border-gray-300 shadow-md"
                                         />

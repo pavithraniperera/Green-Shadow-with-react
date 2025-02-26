@@ -4,8 +4,8 @@ export default class Equipment {
     type: string;
     status: string;
     remarks: string;
-    assignedStaff: string;
-    assignedFields: string;
+    staffId: string;
+    fieldId: string;
 
     constructor(
         equipmentId: string,
@@ -13,16 +13,16 @@ export default class Equipment {
         type: string,
         status: string,
         remarks: string,
-        assignedStaff: string ,
-        assignedFields: string
+        staffId: string ,
+        fieldId: string
     ) {
         this.equipmentId = equipmentId;
         this.name = name;
         this.type = type;
         this.status = status;
         this.remarks = remarks;
-        this.assignedStaff = assignedStaff;
-        this.assignedFields = assignedFields;
+        this.staffId = staffId;
+        this.fieldId = fieldId;
     }
 
 
